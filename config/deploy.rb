@@ -42,9 +42,13 @@ namespace :deploy do
       # Your restart mechanism here, for example:
       # execute :touch, release_path.join('tmp/restart.txt')
 
+      execute "ln -nfs #{release_path}/bower_components/ #{shared_path}/bower_components/; true"
+      execute "ln -nfs #{release_path}/node_modules/ #{shared_path}/node_modules/; true"
+
       execute "cd #{release_path}"
       # execute "fetch(:serverstart)"
-      execute "grunt forever:server1:restart"
+      execute "sudo grunt forever:server1:stop"
+      execute "sudo grunt forever:server1:start"
 
       # execute "ln -nfs #{release_path} /var/www/html; true"
     end

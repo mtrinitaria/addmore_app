@@ -47,10 +47,10 @@ namespace :deploy do
       execute "cp -R #{shared_path}/bower_components/. #{release_path}/bower_components/"
       execute "cp -R #{shared_path}/node_modules/. #{release_path}/node_modules/"
 
-      execute "cd #{release_path}"
+      execute "cd #{release_path}/ && grunt forever:server1:restart"
       # execute "fetch(:serverstart)"
-      execute "sudo grunt forever:server1:stop"
-      execute "sudo grunt forever:server1:start"
+      # execute "grunt forever:server1:stop"
+      # execute "grunt forever:server1:start"
 
       # execute "ln -nfs #{release_path} /var/www/html; true"
     end

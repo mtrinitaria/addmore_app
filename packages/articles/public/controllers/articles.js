@@ -25,6 +25,26 @@ angular.module('mean.articles').controller('ArticlesController', ['$scope', '$st
         $scope.submitted = true;
       }
     };
+    $scope.create2 = function(isValid) {
+      // console.log(isValid, this.client_name);
+
+      if (isValid) {
+        var article = new Articles({
+          title: this.title,
+          content: this.content,
+          client_name: this.client_name
+        });
+        article.$save(function(response) {
+          // $location.path('articles/' + response._id);
+          console.log(response);
+        });
+
+        this.title = '';
+        this.content = '';
+      } else {
+        $scope.submitted = true;
+      }
+    };
 
     $scope.remove = function(article) {
       if (article) {

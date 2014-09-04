@@ -1,0 +1,44 @@
+<section data-ng-controller="ClientsController">
+  <form name="entryForm" class="form-horizontal col-md-6" role="form" data-ng-submit="create(entryForm.$valid)" novalidate>
+
+    <div ng-repeat="form in newClientForm" class="form-group" ng-class="{'has-error' : submitted && !newClientForm[form.id] }" >
+      <label class="col-sm-5 control-label">{{form.label}}</label>
+      <div class="col-sm-7" ng-switch on="form.type">
+        <input name="{{form.id}}" ng-switch-when="date" type="text" class="form-control"
+          ng-model="newClientForm[form.id]"
+          datepicker-popup="yyyy/MM/dd"
+          init-date="initDate"
+          is-open="newClientForm[form.id].open"
+          ng-click="newClientForm[form.id].open = true"
+          min-date="minDate"
+          max-date="maxDate"
+          datepicker-options="dateOptions"
+          date-disabled="disabled(date, mode)" 
+          ng-required="true"
+          close-text="Close"
+          required>
+
+        <input name="{{form.id}}" ng-switch-when="text" type="text" class="form-control"
+          ng-model="newClientForm[form.id]" 
+          required>
+        
+        <select name="{{form.id}}" ng-switch-when="select" class="form-control" 
+          ng-model="newClientForm[form.id]" 
+          ng-options="item as item.name for item in form.list" 
+          required>
+        </select>
+        
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-md-offset-3 col-md-9">
+        <button type="submit" class="btn btn-info">Submit</button>
+      </div>
+    </div>
+
+  </form>
+</section>
+
+
+

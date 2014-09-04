@@ -39,6 +39,13 @@ angular.module('mean.articles').config(['$stateProvider',
           loggedin: checkLoggedin
         }
       })
+      .state('add client', {
+        url: '/articles/add_client',
+        templateUrl: 'articles/views/add_client.html',
+        resolve: {
+          loggedin: checkLoggedin
+        }
+      })
       .state('edit article', {
         url: '/articles/:articleId/edit',
         templateUrl: 'articles/views/edit.html',

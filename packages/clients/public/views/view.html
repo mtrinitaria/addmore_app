@@ -1,0 +1,101 @@
+<section data-ng-controller="ClientsController" data-ng-init="findOne()">
+
+  <div class="form-group col-sm-6" data-ng-init="find()">
+    <label class="control-label">Search Client</label>
+    <input type="text" ng-model="searchSelected" typeahead="item.clientName for item in clients | filter:$viewValue | limitTo:8" typeahead-on-select="searchClient($item)" typeahead-editable="false" class="form-control">
+  </div>
+
+  <tabset class="panel col-sm-12">
+    <tab heading="{{client.clientName}}'s Details">
+      <div class="panel panel-default">
+        <table class="table" class="col-sm-12">
+          <tbody>
+            <tr ng-repeat="data in newClientForm">
+              <td>{{data.label}}</td>
+              <td>{{(client[data.id].name ? client[data.id].name : client[data.id])}}</td>
+            </tr>
+
+        </table>
+      </div>
+      <!-- <div class="panel panel-default">
+        <div class="panel-heading">Client Details <span class="badge text-right pull-right">{{client.created | date:'medium'}}</span></div>
+        <div class="panel-body">
+          <p ng-repeat="data in newClientForm" class="col-sm-12">
+            <span class="col-sm-6 text-right">{{data.label}}</span><span class="col-sm-6">{{(client[data.id].name ? client[data.id].name : client[data.id])}}</span>
+          </p>
+        </div>
+      </div> -->
+    </tab>
+
+    <tab heading="Loan Summary">
+      <div class="panel panel-default">
+        <div class="panel-heading">Loan Summary <span class="badge text-right pull-right">{{client.created | date:'medium'}}</span></div>
+        <div class="panel-body">
+          <p ng-repeat="data in loanSummaries" class="col-sm-12">
+            <span class="col-sm-6 text-right">{{data.label}}</span>
+            <span class="col-sm-6">{{data.value}}</span>
+          </p>
+        </div>
+      </div>
+    </tab>
+
+    <tab heading="Schedule of Payments">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Schedule of Payments</div>
+        <div class="panel-body">
+          <table class="table table-striped" >
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Status</th>
+                <th>Collection Date</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="payment in client.paymentsSchedule">
+                <td colid="{{payment.collectionId}}">{{$index + 1}}</td>
+                <td>
+                 <button ng-hide="payment.status == 1" class="glyphicon glyphicon-question-sign btn btn-danger" tooltip="Not yet collected" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
+                 <button ng-hide="payment.status != 1" class="glyphicon glyphicon-ok-sign btn btn-success" tooltip="Already collected" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
+                </td>
+                <td>{{payment.date}}</td>
+                <td>{{payment.paymentAmount}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+
+  <!-- <span>{{client.created | date:'medium'}}</span> /
+  <span>{{client.user.name}}</span>
+  <h2>{{client.title}}</h2>
+  <div data-ng-if="hasAuthorization(client)">
+    <a class="btn" href="/#!/clients/{{client._id}}/edit">
+      <i class="glyphicon glyphicon-edit"></i>
+    </a>
+    <a class="btn" data-ng-click="remove(client);">
+      <i class="glyphicon glyphicon-trash"></i>
+    </a>
+  </div>
+  <div>{{client.content}}</div> -->
+</section>
+
+<!-- <section data-ng-controller="ClientsController" data-ng-init="findOne()">
+  <span>{{client.created | date:'medium'}}</span> /
+  <span>{{client.user.name}}</span>
+  <h2>{{client.title}}</h2>
+  <div data-ng-if="hasAuthorization(client)">
+    <a class="btn" href="/#!/clients/{{client._id}}/edit">
+      <i class="glyphicon glyphicon-edit"></i>
+    </a>
+    <a class="btn" data-ng-click="remove(client);">
+      <i class="glyphicon glyphicon-trash"></i>
+    </a>
+  </div>
+  <div>{{client.content}}</div>
+</section>
+ -->

@@ -46,7 +46,7 @@ var ClientSchema = new Schema({
     trim:true
   },
   loanAmount: {
-    type:String,
+    type:Number,
     required:true,
     trim:true
   },
@@ -101,7 +101,7 @@ var ClientSchema = new Schema({
     trim:true
   },
   outstandingBalance: {
-    type:String,
+    type:Number,
     required:true,
     trim:true
   },
@@ -111,7 +111,7 @@ var ClientSchema = new Schema({
     trim:true
   },
   totalAmountPaid: {
-    type:String,
+    type:Number,
     required:true,
     trim:true
   }

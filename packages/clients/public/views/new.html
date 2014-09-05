@@ -6,6 +6,8 @@
       <div class="col-sm-7" ng-switch on="form.type">
         <input name="{{form.id}}" ng-switch-when="date" type="text" class="form-control"
           ng-model="newClientForm[form.id]"
+          addwatch="{{form.id}}"
+          bind-summary="{{form.id}}"
           datepicker-popup="yyyy/MM/dd"
           init-date="initDate"
           is-open="newClientForm[form.id].open"
@@ -19,11 +21,20 @@
           required>
 
         <input name="{{form.id}}" ng-switch-when="text" type="text" class="form-control"
-          ng-model="newClientForm[form.id]" 
+          ng-model="newClientForm[form.id]"
+          addwatch="{{form.id}}"
+          bind-summary="{{form.id}}"
           required>
+
+        <!-- <input name="{{form.id}}" ng-switch-when="currency" type="text" class="form-control"
+          ng-model="newClientForm[form.id]" 
+          field="currencyVal"  currency-input
+          required> -->
         
         <select name="{{form.id}}" ng-switch-when="select" class="form-control" 
           ng-model="newClientForm[form.id]" 
+          addwatch="{{form.id}}"
+          bind-summary="{{form.id}}"
           ng-options="item as item.name for item in form.list" 
           required>
         </select>
@@ -38,6 +49,18 @@
     </div>
 
   </form>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">Loan Summary</div>
+      <div class="panel-body">
+        <p ng-repeat="data in loanSummaries" class="col-sm-12" ng-hide="locPath === data.unlink">
+          <span class="col-sm-6 text-right">{{data.label}}</span>
+          <span class="col-sm-6">{{data.value}}</span>
+        </p>
+      </div>
+    </div>
+  </div>
 </section>
 
 

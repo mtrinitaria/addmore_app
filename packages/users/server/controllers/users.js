@@ -235,3 +235,21 @@ exports.forgotpassword = function(req, res, next) {
     }
   );
 };
+
+
+/**
+ * List of Clients
+ */
+exports.all = function(req, res) {
+  User.find().sort('-created').populate('user', 'name username').exec(function(err, users) {
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot list the clients'
+      });
+    }
+    res.json(users);
+
+  });
+};
+
+

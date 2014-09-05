@@ -101,4 +101,11 @@ module.exports = function(MeanUser, app, auth, database, passport) {
       failureRedirect: '#!/login'
     }), users.authCallback);
 
+  app.route('/users')
+    .get(users.all);
+    // .post(auth.requiresLogin, users.create);
 };
+
+
+
+

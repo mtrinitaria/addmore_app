@@ -18,6 +18,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       name: 'clients'
     };
     var DATE_FORMAT = 'yyyy/MM/dd';
+    // console.log('$scope.global', $scope.global);
 
     $scope.scheulePayments = [];
 
@@ -37,14 +38,14 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       { label:'Co-Maker', type:'text', id:'coMaker' } ,
       { label:'Loan Amount', type:'text', id:'loanAmount' } ,
       { label:'Terms', type:'select', list:[{name:'90', terms:90, rate:0.135, weeks:12, days:90}, {name:'120', terms:120, rate:0.18, weeks:17, days:120}], id:'terms' } ,
+      { label:'Payment Frequency', type:'select', list:[{name:'Daily'}, {name:'Weekly'}], id:'paymentFrequency' } ,
       { label:'Loan Type', type:'select', list:[{name:'Line 1'}, {name:'Line 2'}, {name:'Emergency'}], id:'loanType' } ,
       { label:'Loan Status', type:'select', list:[{name:'New'}, {name:'Renewal'}], id:'loanStatus' } ,
-      { label:'Loan Cycle', type:'text', id:'loanCycle' } ,
       { label:'Mode of Payment', type:'select', list:[{name:'Cash'}, {name:'PDC'}], id:'modePayment' } ,
-      { label:'Payment Frequency', type:'select', list:[{name:'Daily'}, {name:'Weekly'}], id:'paymentFrequency' } ,
       { label:'Processing Fee', type:'select', list:[{name:'3.5%', rate:0.035}, {name:'4.5%', rate:0.045}, {name:'5%', rate:0.05}], id:'processingFee' } ,
       { label:'Release Date', type:'date', id:'releaseDate' } ,
-      { label:'Loan Officer', type:'select', list:[{name:'Officer 1'}, {name:'Officer 2'}], id:'loanOfficer' }
+      { label:'Loan Cycle', type:'text', id:'loanCycle' } ,
+      { label:'Loan Officer', type:'pre', id:'loanOfficer' }
     ];
     
     $scope.loanSummaries = [
@@ -75,6 +76,8 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       }
     };
     resetForm();
+
+    $scope.newClientForm.loanOfficer = Global.user.name;
 
     $scope.create = function(isValid) {
       if (isValid) {
@@ -126,6 +129,9 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
         // initial total amount paid is 0
         clientData.totalAmountPaid = 0;
+
+        // set loan officer
+        clientData.loanOfficer = {_id:Global.user._id, name:Global.user.name};
 
         // save new client
         var client = new Clients(clientData);
@@ -228,11 +234,9 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     $scope.find = function() {
       Clients.query(function(clients) {
         for (var i=0, len=clients.length; i<len; i+=1) {
-          // console.log(clients[i].outstandingBalance);
           clients[i].loanAmount = toCurrency(clients[i].loanAmount);
           clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
           clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
-          // clients[i].runningBalance = toCurrency(clients[i].runningBalance);
         }
         $scope.clients = clients;
       });

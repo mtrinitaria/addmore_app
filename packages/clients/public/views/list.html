@@ -7,7 +7,6 @@
   <table class="table table-striped text-center">
     <thead>
       <tr>
-        <th>Actions</th>
         <th>Client Name</th>
         <th>Loan Amount</th>
         <th>Outstanding Balance</th>
@@ -17,17 +16,12 @@
     </thead>
     <tbody>
       <tr ng-repeat="data in clients | filter:searchSelected track by $index">
-        <td>
-          <!-- <span class="glyphicon glyphicon-remove" ng-click="doRemoveProgram(data)"></span> -->
-          <!-- <span class="glyphicon glyphicon-credit-card btn" tooltip="View {{data.clientName.toUpperCase()}}'s payment schedule" ng-click="viewClient(data.clientId)"></span> -->
-          <a data-ng-href="#!/clients/{{data._id}}"><span class="glyphicon glyphicon-credit-card btn" tooltip="View {{data.clientName.toUpperCase()}}'s payment schedule" ></span></a>
-        </td>
-
-        <td>{{data.clientName}}</td>
+        <td><a data-ng-href="#!/clients/{{data._id}}">{{data.clientName}}</a></td>
         <td>{{data.loanAmount}}</td>
         <td>{{data.outstandingBalance}}</td>
         <td>{{data.totalAmountPaid}}</td>
-        <td>{{data.paymentsSchedule[data.paymentsSchedule.length - 1].date}}</td>
+        <td>{{data.maturityDate}}</td>
+        <!-- <td>{{data.paymentsSchedule[data.paymentsSchedule.length - 1].date}}</td> -->
         <!-- <td>{{data.nextPayment.date}}</td> -->
 
       </tr>

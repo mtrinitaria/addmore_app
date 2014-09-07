@@ -1,4 +1,16 @@
 'use strict';
+
+// function toCurrency(x) {
+//   x = x.toString().replace(/\,/g,'');
+//   x = parseFloat(x).toFixed(2);
+//   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+// }
+
+// function toNumber(x) {
+//   x = x.toString().replace(/\,/g,'');
+//   return parseFloat(x);
+// }
+
 angular.module('mean.users')
   .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location',
     function($scope, $rootScope, $http, $location) {
@@ -112,15 +124,80 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('UsersController', ['$scope', '$rootScope', '$http', '$location', '$stateParams', 'MeanUser',
-    function($scope, $rootScope, $http, $location, $stateParams, MeanUser) {
+  .controller('UsersController', ['$scope', '$stateParams', '$rootScope', '$http', '$location', 'dateFilter', 'MeanUser', 'Clients', 'OfficersClients',
+    function($scope, $stateParams, $rootScope, $http, $location, dateFilter, MeanUser, Clients, OfficersClients) {
+      $scope.users = [];
+
       $scope.find = function() {
         MeanUser.query(function(users) {
-          console.log(users);
-          
-          // $scope.clients = clients;
+          // check user's role
+          for (var i = users.length - 1; i >= 0; i-=1) {
+            var user = users[i];
+            if (user.roles.indexOf('super') !== -1) {
+              user.role = 'super';
+            } else if (user.roles.indexOf('supervisor') !== -1) {
+              user.role = 'supervisor';
+            } else if (user.roles.indexOf('encoder') !== -1) {
+              user.role = 'encoder';
+            }
+          }
+          $scope.users = users;
         });
       };
 
+      $scope.findOne = function(id) {
+        // console.log('$stateParams.userId', id, $stateParams.userId);
+        MeanUser.get({
+          userId: $stateParams.userId
+        }, function(user) {
+          if (user.roles.indexOf('super') !== -1) {
+            user.role = 'super';
+          } else if (user.roles.indexOf('supervisor') !== -1) {
+            user.role = 'supervisor';
+          } else if (user.roles.indexOf('encoder') !== -1) {
+            user.role = 'encoder';
+          } else {
+            user.role = 'none';
+          }
+
+          user.created = dateFilter(new Date(user.created), 'yyyy-MM-dd');
+
+          $scope.profile = user;
+
+          console.log('.....', new OfficersClients());
+          OfficersClients.query(function(clients, r) {
+            // console.log('r', r);
+          // OfficersClients.find({userId: $stateParams.userId}, function(clients) {
+            for (var i=0, len=clients.length; i<len; i+=1) {
+              clients[i].loanAmount = clients[i].loanAmount;
+              clients[i].totalAmountPaid = clients[i].totalAmountPaid;
+              clients[i].outstandingBalance = clients[i].outstandingBalance;
+            }
+            $scope.clients = clients;
+          });
+          // console.log(user._id );
+          /*$http.get('/officerclients/' + user._id)
+            .success(function(clients) {
+              // for (var i=0, len=clients.length; i<len; i+=1) {
+              //   clients[i].loanAmount = toCurrency(clients[i].loanAmount);
+              //   clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
+              //   clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
+              // }
+              $scope.clients = clients;
+              // console.log('clicents', clients);
+            })
+            .error(function(error) {
+              if (error.msg === 'Token invalid or expired')
+                $scope.resetpassworderror = 'Could not update password as token is invalid or may have expired';
+              else
+                $scope.validationError = error;
+            });*/
+        });
+      };
+
+
+
     }
   ]);
+
+

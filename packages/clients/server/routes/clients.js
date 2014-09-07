@@ -16,13 +16,22 @@ module.exports = function(Clients, app, auth, database) {
   app.route('/clients')
     .get(clients.all)
     .post(auth.requiresLogin, clients.create);
+  app.route('/officerclients:/userId')
+    .get(clients.officerclients);
   app.route('/clients/:clientId')
     .get(clients.show)
     .put(auth.requiresLogin, hasAuthorization, clients.update)
     .delete(auth.requiresLogin, hasAuthorization, clients.destroy);
 
+
+  // app.get('/officerclients', function(req, res, next) {
+  //   console.log(req);
+  //   res.send(res);
+  // });
+
   // Finish with setting up the clientId param
   app.param('clientId', clients.client);
+  // app.param('clientId', clients.client);
   /*app.get('/clients/example/anyone', function(req, res, next) {
     res.send('Anyone can access this');
   });

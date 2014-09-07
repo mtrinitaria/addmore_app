@@ -1,10 +1,25 @@
 'use strict';
 
-angular.module('mean.users').factory('MeanUser', [
+angular.module('mean.users').factory('MeanUser', ['$resource',
+  function($resource) {
+    return $resource('users/:userId', {
+      userId: '@_id'
+    }, {
+      update: {
+        method: 'PUT'
+      }
+    });
+  }
+]);
 
-  function() {
-    return {
-      name: 'users'
-    };
+angular.module('mean.clients').factory('OfficersClients', ['$resource',
+  function($resource) {
+    return $resource('officersclients/:userId', {
+      userId: '@_id'
+    }, {
+      update: {
+        method: 'PUT'
+      }
+    });
   }
 ]);

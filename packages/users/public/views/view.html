@@ -1,0 +1,36 @@
+<section class="container" data-ng-controller="UsersController" data-ng-init="findOne()">
+  <h2>{{profile.username}}</h2>
+
+  <div class="col-sm-4">
+    <ul class="list-group ">
+      <li class="list-group-item text-right"><span class="pull-left"><strong>Real Name:</strong></span>{{profile.name}}</li>
+      <li class="list-group-item text-right"><span class="pull-left"><strong>Email:</strong></span>{{profile.email}}</li>
+      <li class="list-group-item text-right"><span class="pull-left"><strong>Role:</strong></span>{{profile.role}}</li>
+      <li class="list-group-item text-right"><span class="pull-left"><strong>Member Since:</strong></span>{{profile.created}}</li>
+    </ul>
+  </div>
+
+  <div class="col-sm-8" >  
+    <h4>My Clients</h4>
+    <table class="table table-striped text-center">
+      <thead>
+        <tr>
+          <th>Client Name</th>
+          <th>Loan Amount</th>
+          <th>Outstanding Balance</th>
+          <th>Total Amount Paid</th>
+          <th>Maturity Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="data in clients | filter:searchSelected track by $index">
+          <td><a data-ng-href="#!/clients/{{data._id}}">{{data.clientName}}</a></td>
+          <td>{{data.loanAmount}}</td>
+          <td>{{data.outstandingBalance}}</td>
+          <td>{{data.totalAmountPaid}}</td>
+          <td>{{data.maturityDate}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

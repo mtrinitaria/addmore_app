@@ -26,6 +26,8 @@
           bind-summary="{{form.id}}"
           required>
 
+        <pre name="{{form.id}}" ng-switch-when="pre" class="form-control text-left">{{newClientForm[form.id]}}</pre>
+
         <!-- <input name="{{form.id}}" ng-switch-when="currency" type="text" class="form-control"
           ng-model="newClientForm[form.id]" 
           field="currencyVal"  currency-input

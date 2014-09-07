@@ -1,32 +1,33 @@
 <section data-ng-controller="UsersController" data-ng-init="find()">
   <div class="form-group col-sm-6">
-    <pre>Search By Client Name: {{searchSelected | json}}</pre>
-    <input type="text" ng-model="searchSelected" typeahead="item.clientName for item in clients | filter:$viewValue | limitTo:8" class="form-control">
+    <pre>Search By Name: {{searchSelected | json}}</pre>
+    <input type="text" ng-model="searchSelected" typeahead="item.name for item in users | filter:$viewValue | limitTo:8" class="form-control">
   </div>
 
   <table class="table table-striped text-center">
     <thead>
       <tr>
-        <th>Actions</th>
-        <th>Client Name</th>
-        <th>Loan Amount</th>
-        <th>Outstanding Balance</th>
-        <th>Total Amount Paid</th>
-        <th>Maturity Date</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Roles</th>
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="data in clients | filter:searchSelected track by $index">
+      <tr ng-repeat="data in users | filter:searchSelected track by $index">
+        <td><a data-ng-href="#!/users/{{data._id}}">{{data.name}}</a></td>
+        <td>{{data.email}}</td>
         <td>
-          <a data-ng-href="#!/clients/{{data._id}}"><span class="glyphicon glyphicon-credit-card btn" tooltip="View {{data.clientName.toUpperCase()}}'s payment schedule" ></span></a>
+          <!-- <div class="btn-group" ng-init="roles">
+              <label class="btn btn-primary" ng-model="data.checkRoles.super" btn-checkbox>Super</label>
+              <label class="btn btn-primary" ng-model="data.checkRoles.supervisor" btn-checkbox>Supervisor</label>
+              <label class="btn btn-primary" ng-model="data.checkRoles.encoder" btn-checkbox>Encoder</label>
+          </div> -->
+          <div class="btn-group">
+            <label class="btn btn-primary" ng-model="data.role" btn-radio="'super'">Super</label>
+            <label class="btn btn-primary" ng-model="data.role" btn-radio="'supervisor'">Supervisor</label>
+            <label class="btn btn-primary" ng-model="data.role" btn-radio="'encoder'">Encoder</label>
+          </div>
         </td>
-
-        <td>{{data.clientName}}</td>
-        <td>{{data.loanAmount}}</td>
-        <td>{{data.outstandingBalance}}</td>
-        <td>{{data.totalAmountPaid}}</td>
-        <td>{{data.paymentsSchedule[data.paymentsSchedule.length - 1].date}}</td>
-
       </tr>
     </tbody>
   </table>

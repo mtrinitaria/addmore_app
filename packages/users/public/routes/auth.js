@@ -60,10 +60,11 @@ angular.module('mean.users').config(['$stateProvider',
       })
       .state('meanUser', {
         url: '/users',
-        templateUrl: 'users/views/list.html',
-        resolve: {
-          loggedin: checkLoggedOut
-        }
+        templateUrl: 'users/views/list.html'
+      })
+      .state('user by id', {
+        url: '/users/:userId',
+        templateUrl: 'users/views/view.html'
       });
   }
 ]);

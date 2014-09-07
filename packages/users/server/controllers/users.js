@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
   User = mongoose.model('User'),
+  Client = mongoose.model('Client'),
   async = require('async'),
   config = require('meanio').loadConfig(),
   crypto = require('crypto'),
@@ -27,6 +28,62 @@ exports.signin = function(req, res) {
   }
   res.redirect('#!/login');
 };
+
+
+/**
+ * Show an user
+ */
+exports.show = function(req, res) {
+  res.json(req.user);
+};
+
+/**
+ * List of Clients
+ */
+exports.all = function(req, res) {
+  User.find().sort('-created').populate('user', 'name username').exec(function(err, users) {
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot list the users'
+      });
+    }
+    res.json(users);
+
+  });
+};
+
+var officersclientsUserId;
+exports.officersclients = function(req, res) {
+  Client.find().sort('-created').where('loanOfficer._id', officersclientsUserId).limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid paymentsSchedule').populate('user', 'name username').exec(function(err, clients) {
+    
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot list the clients'
+      });
+    }
+    var datas = [];
+    for (var i=0,len=clients.length;i<len;i+=1) {
+      var dta = {};
+      var client = clients[i];
+      dta._id = client._id;
+      dta.clientName = client.clientName;
+      dta.loanAmount = client.loanAmount;
+      dta.outstandingBalance = client.outstandingBalance;
+      dta.totalAmountPaid = client.totalAmountPaid;
+      dta.maturityDate = client.paymentsSchedule[client.paymentsSchedule.length - 1].date;
+      datas[i] = dta;
+    }
+    // res.json(clients);
+    res.json(datas);
+    // console.log(clients);
+  });
+};
+
+exports.userprofile = function(req, res) {
+  officersclientsUserId = req.params.userId;
+};
+
+
 
 /**
  * Logout
@@ -126,8 +183,11 @@ exports.user = function(req, res, next, id) {
       if (!user) return next(new Error('Failed to load User ' + id));
       req.profile = user;
       next();
+      res.json(user);
     });
 };
+
+
 
 /**
  * Resets the password
@@ -235,21 +295,4 @@ exports.forgotpassword = function(req, res, next) {
     }
   );
 };
-
-
-/**
- * List of Clients
- */
-exports.all = function(req, res) {
-  User.find().sort('-created').populate('user', 'name username').exec(function(err, users) {
-    if (err) {
-      return res.json(500, {
-        error: 'Cannot list the clients'
-      });
-    }
-    res.json(users);
-
-  });
-};
-
 

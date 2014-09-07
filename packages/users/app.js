@@ -17,12 +17,12 @@ MeanUser.register(function(app, auth, passport, database) {
   MeanUser.routes(app, auth, database, passport);
 
   //We are adding a link to the main menu for all authenticated users
-  /*MeanUser.menus.add({
+  MeanUser.menus.add({
       title: 'Users',
       link: 'meanUser',
       roles: ['authenticated'],
       menu: 'main'
-  });*/
+  });
 
   MeanUser.aggregateAsset('js', 'meanUser.js');
 

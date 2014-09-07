@@ -17,14 +17,6 @@
 
         </table>
       </div>
-      <!-- <div class="panel panel-default">
-        <div class="panel-heading">Client Details <span class="badge text-right pull-right">{{client.created | date:'medium'}}</span></div>
-        <div class="panel-body">
-          <p ng-repeat="data in newClientForm" class="col-sm-12">
-            <span class="col-sm-6 text-right">{{data.label}}</span><span class="col-sm-6">{{(client[data.id].name ? client[data.id].name : client[data.id])}}</span>
-          </p>
-        </div>
-      </div> -->
     </tab>
 
     <tab heading="Loan Summary">
@@ -51,6 +43,8 @@
                 <th>Status</th>
                 <th>Collection Date</th>
                 <th>Amount</th>
+                <th>Paid</th>
+                <th>Balance</th>
               </tr>
             </thead>
             <tbody>

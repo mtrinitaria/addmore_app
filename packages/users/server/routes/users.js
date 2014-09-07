@@ -3,7 +3,29 @@
 // User routes use users controller
 var users = require('../controllers/users');
 
+
+// Article authorization helpers
+/*var hasAuthorization = function(req, res, next) {
+  if (!req.user.isAdmin && req.article.user.id !== req.user.id) {
+    return res.send(401, 'User is not authorized');
+  }
+  next();
+};*/
+
+// var officersclientsUserId;
+
 module.exports = function(MeanUser, app, auth, database, passport) {
+
+  app.route('/users')
+    .get(users.all);
+
+  app.route('/users/:userId')
+    .get(users.userprofile);
+
+
+  app.route('/officersclients')
+    .get(users.officersclients);
+
 
   app.route('/logout')
     .get(users.signout);
@@ -39,7 +61,7 @@ module.exports = function(MeanUser, app, auth, database, passport) {
         redirect: (req.user.roles.indexOf('admin') !== -1) ? req.get('referer') : false
       });
     });
-
+/*
   // Setting the facebook oauth routes
   app.route('/auth/facebook')
     .get(passport.authenticate('facebook', {
@@ -100,10 +122,7 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     .get(passport.authenticate('linkedin', {
       failureRedirect: '#!/login'
     }), users.authCallback);
-
-  app.route('/users')
-    .get(users.all);
-    // .post(auth.requiresLogin, users.create);
+*/
 };
 
 

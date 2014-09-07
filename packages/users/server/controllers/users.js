@@ -6,6 +6,7 @@
 var mongoose = require('mongoose'),
   User = mongoose.model('User'),
   Client = mongoose.model('Client'),
+  Payment = mongoose.model('Payment'),
   async = require('async'),
   config = require('meanio').loadConfig(),
   crypto = require('crypto'),
@@ -76,6 +77,17 @@ exports.officersclients = function(req, res) {
     // res.json(clients);
     res.json(datas);
     // console.log(clients);
+  });
+};
+exports.officersstats = function(req, res) {
+  Payment.find().sort('-created').where('userId', officersclientsUserId).limit(500).select('userId amount created').populate('user', 'name username').exec(function(err, stats) {
+    
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot list the stats'
+      });
+    }
+    res.json(stats);
   });
 };
 

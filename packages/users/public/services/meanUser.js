@@ -23,3 +23,15 @@ angular.module('mean.clients').factory('OfficersClients', ['$resource',
     });
   }
 ]);
+
+angular.module('mean.clients').factory('OfficersStats', ['$resource',
+  function($resource) {
+    return $resource('officersstats/:userId', {
+      userId: '@_id'
+    }, {
+      update: {
+        method: 'PUT'
+      }
+    });
+  }
+]);

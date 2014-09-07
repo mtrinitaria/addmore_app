@@ -1,10 +1,10 @@
 'use strict';
 
-// function toCurrency(x) {
-//   x = x.toString().replace(/\,/g,'');
-//   x = parseFloat(x).toFixed(2);
-//   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-// }
+function toCurrency(x) {
+  x = x.toString().replace(/\,/g,'');
+  x = parseFloat(x).toFixed(2);
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 
 // function toNumber(x) {
 //   x = x.toString().replace(/\,/g,'');
@@ -124,9 +124,31 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('UsersController', ['$scope', '$stateParams', '$rootScope', '$http', '$location', 'dateFilter', 'MeanUser', 'Clients', 'OfficersClients',
-    function($scope, $stateParams, $rootScope, $http, $location, dateFilter, MeanUser, Clients, OfficersClients) {
+  .controller('UsersController', ['$scope', '$stateParams', '$rootScope', '$http', '$location', 'dateFilter', 'Global', 'MeanUser', 'Clients', 'OfficersClients', 'OfficersStats',
+    function($scope, $stateParams, $rootScope, $http, $location, dateFilter, Global, MeanUser, Clients, OfficersClients, OfficersStats) {
       $scope.users = [];
+
+      $scope.update = function(isValid) {
+        if (isValid) {
+          var user = $scope.user;
+          if (!user.updated) {
+            user.updated = [];
+          }
+          user.updated.push(new Date().getTime());
+
+
+          // user.loanAmount = parseFloat(user.loanAmount.split(',').join('');
+          // user.outstandingBalance = user.outstandingBalance.split(',').join('');
+
+          user.$update(function() {
+            // $location.path('users/' + user._id);
+          });
+        } else {
+          $scope.submitted = true;
+        }
+      };
+
+      // Global.myuser = 'ahehe';
 
       $scope.find = function() {
         MeanUser.query(function(users) {
@@ -145,8 +167,7 @@ angular.module('mean.users')
         });
       };
 
-      $scope.findOne = function(id) {
-        // console.log('$stateParams.userId', id, $stateParams.userId);
+      $scope.findOne = function() {
         MeanUser.get({
           userId: $stateParams.userId
         }, function(user) {
@@ -164,34 +185,75 @@ angular.module('mean.users')
 
           $scope.profile = user;
 
-          console.log('.....', new OfficersClients());
-          OfficersClients.query(function(clients, r) {
-            // console.log('r', r);
-          // OfficersClients.find({userId: $stateParams.userId}, function(clients) {
+          // after getting the profile to get the userId
+          // this will look for clients with loanOfficer._id = userId of selected user
+          OfficersClients.query(function(clients) {
             for (var i=0, len=clients.length; i<len; i+=1) {
-              clients[i].loanAmount = clients[i].loanAmount;
-              clients[i].totalAmountPaid = clients[i].totalAmountPaid;
-              clients[i].outstandingBalance = clients[i].outstandingBalance;
+              clients[i].loanAmount = toCurrency(clients[i].loanAmount);
+              clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
+              clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
             }
+
+            // clients.stats = {
+            //   today:0,
+            //   week:0,
+            //   month:0
+            // };
             $scope.clients = clients;
+
+            // console.log(clients);
+            user.stats = {};
+            OfficersStats.query(function(stats) {
+              var stat_today = 0;
+              var stat_week = 0;
+              var stat_month = 0;
+
+              var now = new Date();
+              var day = now.getDay();
+              var diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday, 1=monday, 2=tuesday, etc.
+              // diff = dateFilter(diff, 'yyyy-MM-dd');
+              // console.log(dateFilter(new Date(), 'yyyy-MM-dd'));
+              var firs_day_monday = new Date(diff);
+              firs_day_monday = new Date(dateFilter(firs_day_monday, 'yyyy-MM-dd'));
+              firs_day_monday = new Date(firs_day_monday.getTime() - (firs_day_monday.getHours() * 60 * 60 * 1000));
+              
+              // console.log(diff,firs_day_monday.getHours(), now > firs_day_monday, stat_week);
+              var date = new Date();
+              var first_day_month = new Date(date.getFullYear(), date.getMonth(), 1);
+              // var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+              var paid_date;
+              for (var i = stats.length - 1, stat; i >= 0; i-=1) {
+                stat = stats[i];
+                stat_today += stat.amount;
+                paid_date = new Date(stat.created);
+
+                if (paid_date.getTime() > firs_day_monday.getTime()) {
+                  stat_week += stat.amount;
+                }
+
+                if (paid_date.getTime() > first_day_month.getTime()) {
+                  stat_month += stat.amount;
+                }
+
+              }
+              user.stats.today = toCurrency(stat_today);
+              user.stats.week = toCurrency(stat_week);
+              user.stats.month = toCurrency(stat_month);
+
+              // $scope.$apply();
+              // console.lo
+              /*for (var i=0, len=clients.length; i<len; i+=1) {
+                clients[i].loanAmount = clients[i].loanAmount;
+                clients[i].totalAmountPaid = clients[i].totalAmountPaid;
+                clients[i].outstandingBalance = clients[i].outstandingBalance;
+              }
+              $scope.clients = clients;*/
+            });
+            
+
           });
-          // console.log(user._id );
-          /*$http.get('/officerclients/' + user._id)
-            .success(function(clients) {
-              // for (var i=0, len=clients.length; i<len; i+=1) {
-              //   clients[i].loanAmount = toCurrency(clients[i].loanAmount);
-              //   clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
-              //   clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
-              // }
-              $scope.clients = clients;
-              // console.log('clicents', clients);
-            })
-            .error(function(error) {
-              if (error.msg === 'Token invalid or expired')
-                $scope.resetpassworderror = 'Could not update password as token is invalid or may have expired';
-              else
-                $scope.validationError = error;
-            });*/
+          
         });
       };
 

@@ -11,3 +11,15 @@ angular.module('mean.clients').factory('Clients', ['$resource',
     });
   }
 ]);
+
+angular.module('mean.users').factory('MeanUser', ['$resource',
+  function($resource) {
+    return $resource('users/:userId', {
+      userId: '@_id'
+    }, {
+      update: {
+        method: 'PUT'
+      }
+    });
+  }
+]);

@@ -26,6 +26,9 @@ module.exports = function(MeanUser, app, auth, database, passport) {
   app.route('/officersclients')
     .get(users.officersclients);
 
+  app.route('/officersstats')
+    .get(users.officersstats);
+
 
   app.route('/logout')
     .get(users.signout);

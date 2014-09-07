@@ -11,8 +11,8 @@ function toNumber(x) {
   return parseFloat(x);
 }
 
-angular.module('mean.clients').controller('ClientsController', ['$scope', '$stateParams', '$location', 'dateFilter', 'Global', 'Clients',
-  function($scope, $stateParams, $location, dateFilter, Global, Clients) {
+angular.module('mean.clients').controller('ClientsController', ['$scope', '$stateParams', '$location', 'dateFilter', 'Global', 'Clients', 'Payments', '$modal', 
+  function($scope, $stateParams, $location, dateFilter, Global, Clients, Payments, $modal) {
     $scope.global = Global;
     $scope.package = {
       name: 'clients'
@@ -133,13 +133,6 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         // set loan officer
         clientData.loanOfficer = {_id:Global.user._id, name:Global.user.name};
 
-        // save new client
-        var client = new Clients(clientData);
-        client.$save(function(response) {
-          $location.path('clients/' + response._id);
-          // console.log(response);
-        });
-
         // $scope.submitted = false;
         resetForm();
       } else {
@@ -155,10 +148,6 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
           client.updated = [];
         }
         client.updated.push(new Date().getTime());
-
-
-        // client.loanAmount = parseFloat(client.loanAmount.split(',').join('');
-        // client.outstandingBalance = client.outstandingBalance.split(',').join('');
 
         client.$update(function() {
           // $location.path('clients/' + client._id);
@@ -181,6 +170,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         client.outstandingBalance = toCurrency(client.outstandingBalance);
 
         $scope.client = client;
+
 
         $scope.loanSummaries.loanCycle.value = client.loanCycle;
         $scope.loanSummaries.loanAmount.value = client.loanAmount;
@@ -243,50 +233,130 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     };
 
     $scope.updatePayStatus = function(payment) {
-      // update status
-      payment.status = (payment.status === 1 ? 0 : 1);
 
-      // update outstanding balance
-      var bal = 0;
-      var amt_paid = 0;
-      // var run_bal = 0;
-      var run_bal_total = 0;
-      var now = new Date();
-      var pay_date;
-      var next_pay_date;
-      var len = $scope.client.paymentsSchedule.length;
-      for (var i = 0; i<len; i+=1) {
-        if ($scope.client.paymentsSchedule[i].status === 0) {
-          bal += toNumber($scope.client.paymentsSchedule[i].paymentAmount);
-        } else {
-          amt_paid += toNumber($scope.client.paymentsSchedule[i].paymentAmount);
+      // console.log(payment.paymentAmount);
+      var modalInstance = $modal.open({
+        templateUrl: 'bower_components/templates/mymodal.html',
+        controller: function($scope, $modalInstance, items) {
+          $scope.paymentAmount = items;
+          // console.log(items);
+
+          $scope.ok = function (paymentType, paidAmount) {
+            // pass paidAmount to modalInstance.result.then
+            // console.log('ok', paymentType, paidAmount);
+            $scope.paymentType = paymentType;
+            $scope.paidAmount = paidAmount;
+            $modalInstance.close({paymentType: paymentType, paidAmount:paidAmount});
+          };
+
+          $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+          };
+        },
+        size: 'md',
+        resolve: {
+          items: function () {
+            return payment.paymentAmount;
+          }
         }
-        // to get running balance
-        // check if schedule date is less than date now, then check if status is 0
-        pay_date = new Date($scope.client.paymentsSchedule[i].date);
-        if (pay_date.getTime() <= now.getTime() && i + 1 < len) {
-          next_pay_date = $scope.client.paymentsSchedule[i + 1].date;
+      });
+
+      modalInstance.result.then(function (paid) {
+        // console.log(paid, paid.paymentType, paid.paidAmount, payment.paymentAmount);
+
+        // update status
+        // payment.status = (payment.status === 1 ? 0 : 1);
+        switch (paid.paymentType) {
+          case 'full':
+            payment.status = 1; 
+            payment.paidAmount = payment.paymentAmount;
+          break;
+          case 'partial':
+            payment.status = -1; 
+            payment.paidAmount = paid.paidAmount;
+          break;
+          case 'none':
+            payment.status = 0; 
+            payment.paidAmount = 0;
+          break;
         }
-      }
-      $scope.client.nextPayment = next_pay_date;
-      $scope.client.loanAmount = toNumber($scope.client.loanAmount);
-      $scope.client.outstandingBalance = toNumber(bal);
-      $scope.client.totalAmountPaid = toNumber(amt_paid);
-      $scope.update(true);
+
+        payment.balance = toNumber(payment.paymentAmount) - toNumber(payment.paidAmount);
+
+        // update outstanding balance
+        var bal_upto_maturity = 0;
+        var amt_paid_from_start = 0;
+        // var run_bal = 0;
+        var run_bal_total = 0;
+        var now = new Date();
+        var pay_date;
+        var next_pay_date;
+        var len = $scope.client.paymentsSchedule.length;
+        for (var i = 0; i<len; i+=1) {
+          bal_upto_maturity += toNumber($scope.client.paymentsSchedule[i].balance || 0);
+          amt_paid_from_start += toNumber($scope.client.paymentsSchedule[i].paidAmount || 0);
+
+          // if (i > 1) {
+          //   console.log($scope.client.paymentsSchedule[i - 1].balance);
+          // }
 
 
-      // update loan summary
-      for ( i = 0; i<len; i+=1) {
-        pay_date = new Date($scope.client.paymentsSchedule[i].date);
-        next_pay_date = new Date($scope.client.nextPayment);
-        if (pay_date.getTime() <= next_pay_date.getTime()) {
-          run_bal_total += toNumber($scope.client.paymentsSchedule[i].paymentAmount);
+          // console.log($scope.client.paymentsSchedule[i]);
+          // to get running balance
+          // check if schedule date is less than date now, then check if status is 0
+          pay_date = new Date($scope.client.paymentsSchedule[i].date);
+          if (pay_date.getTime() <= now.getTime() && i + 1 < len) {
+            next_pay_date = $scope.client.paymentsSchedule[i + 1].date;
+          }
         }
-      }
-      $scope.loanSummaries.totalAmountPaid.value = toCurrency(amt_paid);
-      $scope.loanSummaries.outstandingBalance.value = toCurrency(bal);
-      $scope.loanSummaries.runningBalance.value = toCurrency(run_bal_total - amt_paid);
+        $scope.client.nextPayment = next_pay_date;
+        $scope.client.loanAmount = toNumber($scope.client.loanAmount);
+        $scope.client.outstandingBalance = toNumber(bal_upto_maturity);
+        $scope.client.totalAmountPaid = toNumber(amt_paid_from_start);
+
+
+        // will update the db, here's the magic
+        // $scope.update(true);
+        var client = $scope.client;
+        if (!client.updated) {
+          client.updated = [];
+        }
+        client.updated.push(new Date().getTime());
+        client.$update(function() {
+          $scope.global.createPayment(client._id, $scope.global.user._id, toNumber(payment.paidAmount));
+        });
+
+       /* */
+
+        // update loan summary
+        for ( i = 0; i<len; i+=1) {
+          pay_date = new Date($scope.client.paymentsSchedule[i].date);
+          next_pay_date = new Date($scope.client.nextPayment);
+          if (pay_date.getTime() <= next_pay_date.getTime()) {
+            run_bal_total += toNumber($scope.client.paymentsSchedule[i].paymentAmount);
+          }
+        }
+        $scope.loanSummaries.totalAmountPaid.value = toCurrency(amt_paid_from_start);
+        $scope.loanSummaries.outstandingBalance.value = toCurrency(bal_upto_maturity);
+        $scope.loanSummaries.runningBalance.value = toCurrency(run_bal_total - amt_paid_from_start);
+
+
+
+        /*$scope.global.user.$update(function(){
+          console.log('user updated');
+        });*/
+
+        // after updating the db set the payment.paidAmount to currency
+        payment.paidAmount = toCurrency(payment.paidAmount);
+        payment.balance = toCurrency(payment.balance);
+
+
+
+      }, function () {
+        // $log.info('Modal dismissed at: ' + new Date());
+      });
     };
+
 
     $scope.today = function() {
       $scope.dt = new Date();
@@ -304,6 +374,8 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     };
 
     $scope.initDate = new Date('2016-15-20');
+
+
 
   }
 ]);

@@ -142,3 +142,42 @@ ClientSchema.statics.load = function(id, cb) {
 };
 
 mongoose.model('Client', ClientSchema);
+
+
+
+
+
+
+var CollectionSchema = new Schema({
+  created: {
+    type: Date,
+    default: Date.now
+  },
+  clientId: {
+    type:String,
+    required:true
+  },
+  userId: {
+    type:String,
+    required:true
+  },
+  collectionAmount: {
+    type:Number,
+    required:true
+  }
+});
+
+/**
+ * Statics
+ */
+CollectionSchema.statics.load = function(id, cb) {
+  this.findOne({
+    _id: id
+  }).populate('user', 'name username').exec(cb);
+};
+
+mongoose.model('Collection', ClientSchema);
+
+
+
+

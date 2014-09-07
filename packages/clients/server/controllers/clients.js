@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
   Client = mongoose.model('Client'),
+  // Collection = mongoose.model('Collection'),
   _ = require('lodash');
 
 
@@ -41,10 +42,23 @@ exports.create = function(req, res) {
 /**
  * Update an client
  */
-exports.update = function(req, res) {
+exports.update = function(req, res, next) {
   var client = req.client;
 
-  client = _.extend(client, req.body);
+  // console.log(req);
+  var realBody = {};
+  var userCollection;
+  for (var n in req.body) {
+    if (n !== 'userCollection') {
+      realBody[n] = req.body[n];
+    } else {
+      userCollection = req.body[n];
+      console.log('req.body[n]', req.body[n]);
+    }
+  }
+
+  // client = _.extend(client, req.body);
+  client = _.extend(client, realBody);
 
   client.save(function(err) {
     if (err) {
@@ -53,8 +67,49 @@ exports.update = function(req, res) {
       });
     }
     res.json(client);
-
   });
+
+  /*var colData = {};
+  colData.clientId = realBody._id;
+  colData.userId = userCollection.userId;
+  colData.collectionAmount = userCollection.collectedAmount;
+  var collection = new Collection(colData);
+
+  collection.save(function(err, col) {
+    // if (err) {
+    //   return res.json(500, {
+    //     error: 'Cannot save the collection'
+    //   });
+    // }
+    // res.json(collection);
+    res.json(colData);
+    console.log('##########save', col);
+
+  });*/
+
+
+
+  // console.log('...userCollection', userCollection);
+
+  /*User.findOne({
+    _id: userCollection.userId
+  }, function(err, user) {
+    // console.log(err, user, userCollection.userId);
+    if (!user.collections) {
+      user.collections = [];
+    }
+    user.collections.push(userCollection.collectedAmount);
+    user.save(function(err) {
+      if (err) return next(err);
+      return res.send({
+        user: user
+      });
+    });
+
+  });*/
+
+  // var user = eq.body.userCollection;
+  // user = _.extend(user, )
 };
 
 /**
@@ -85,12 +140,6 @@ exports.show = function(req, res) {
  * List of Clients
  */
 exports.all = function(req, res, a) {
-  console.log('all');
-  console.log('all');
-  console.log('all');
-  console.log('all');
-  console.log('all');
-  console.log('all', req.client);
   Client.find().sort('-created').limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid paymentsSchedule').populate('user', 'name username').exec(function(err, clients) {
     
     if (err) {

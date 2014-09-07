@@ -2,6 +2,6 @@
   <div class="jumbotron">
   <h1>Good day {{welcomeUser}}!</h1>
   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-  <p><a class="btn btn-primary btn-lg" role="button" href="#!/users/{{global.user._id}}">View Profile</a></p>
+  <p><a class="btn btn-primary btn-lg" role="button" href="#!/users/{{global.user._id}}" ng-show="global.authenticated">View Profile</a></p>
 </div>
 </section>

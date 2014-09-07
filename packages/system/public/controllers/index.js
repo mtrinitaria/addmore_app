@@ -7,7 +7,7 @@ angular.module('mean.system').controller('IndexController', ['$scope', 'Global',
     
     setTimeout(function(){
       $scope.welcomeUser = Global.user.name;
-      console.log($scope.welcomeUser,Global.user.name);
+      // console.log($scope.welcomeUser,Global.user.name, $scope.global.authenticated);
       $scope.$apply();
     }, 100);
   }

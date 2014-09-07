@@ -51,9 +51,9 @@
               <tr ng-repeat="payment in client.paymentsSchedule">
                 <td colid="{{payment.collectionId}}">{{$index + 1}}</td>
                 <td>
-                 <button ng-show="payment.status === 1" class="glyphicon glyphicon-star btn btn-success" tooltip="Already collected" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
-                 <button ng-show="payment.status === 0" class="glyphicon glyphicon-star-empty btn btn-danger" tooltip="Not yet collected" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
-                 <button ng-show="payment.status === -1" class="glyphicon glyphicon-star-empty btn btn-warning" tooltip="Partialy collected" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
+                 <button ng-show="payment.status === 1" class="glyphicon glyphicon-star btn btn-success" tooltip="Already paid" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
+                 <button ng-show="payment.status === 0" class="glyphicon glyphicon-star-empty btn btn-danger" tooltip="Not yet paid" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
+                 <button ng-show="payment.status === -1" class="glyphicon glyphicon-star-empty btn btn-warning" tooltip="Partialy paid" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button>
                 </td>
                 <td>{{payment.date}}</td>
                 <td>{{payment.paymentAmount}}</td>

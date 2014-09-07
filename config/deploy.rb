@@ -46,8 +46,14 @@ namespace :deploy do
       execute "ln -nfs #{shared_path}/node_modules/ #{release_path}/; true"
       # execute "cp -R #{shared_path}/bower_components/. #{release_path}/bower_components/"
       # execute "cp -R #{shared_path}/node_modules/. #{release_path}/node_modules/"
+      
+      last_release_path = releases_path.join(capture(:ls, '-xr', releases_path).split[1])
 
-      execute "cd #{release_path}/ && grunt forever:server1:restart"
+      # execute "cp #{last_release_path}/wp-config.php #{current_path}/."
+
+      execute "cd #{last_release_path}/ && grunt forever:server1:stop"
+
+      execute "cd #{release_path}/ && grunt forever:server1:start"
       # execute "fetch(:serverstart)"
       # execute "grunt forever:server1:stop"
       # execute "grunt forever:server1:start"

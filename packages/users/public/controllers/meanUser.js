@@ -12,8 +12,8 @@ function toCurrency(x) {
 // }
 
 angular.module('mean.users')
-  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location',
-    function($scope, $rootScope, $http, $location) {
+  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
+    function($scope, $rootScope, $http, $location, Global) {
       // This object will be filled by the form
       $scope.user = {};
 
@@ -27,6 +27,7 @@ angular.module('mean.users')
             // authentication OK
             $scope.loginError = 0;
             $rootScope.user = response.user;
+            Global.user = response.user;
             $rootScope.$emit('loggedin');
             if (response.redirect) {
               if (window.location.href === response.redirect) {
@@ -63,6 +64,7 @@ angular.module('mean.users')
             // authentication OK
             $scope.registerError = 0;
             $rootScope.user = $scope.user;
+            Global.user = response.user;
             $rootScope.$emit('loggedin');
             $location.url('/');
           })
@@ -103,6 +105,7 @@ angular.module('mean.users')
         })
           .success(function(response) {
             $rootScope.user = response.user;
+            Global.user = response.user;
             $rootScope.$emit('loggedin');
             if (response.redirect) {
               if (window.location.href === response.redirect) {

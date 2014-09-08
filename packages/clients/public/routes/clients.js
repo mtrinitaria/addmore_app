@@ -8,6 +8,10 @@ angular.module('mean.clients').config(['$stateProvider',
 
       // Make an AJAX call to check if the user is logged in
       $http.get('/loggedin').success(function(user) {
+
+        // console.log('loggedin', user, $scope.global);
+        $stateProvider.loanOfficer = user.name;
+        // Global.user = user;
         // Authenticated
         if (user !== '0') $timeout(deferred.resolve);
 
@@ -17,6 +21,8 @@ angular.module('mean.clients').config(['$stateProvider',
           $location.url('/login');
         }
       });
+
+      console.log(deferred.promise);
 
       return deferred.promise;
     };

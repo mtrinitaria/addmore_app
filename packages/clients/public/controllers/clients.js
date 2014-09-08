@@ -253,7 +253,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
       // console.log(payment.paymentAmount);
       var modalInstance = $modal.open({
-        templateUrl: 'bower_components/templates/mymodal.html',
+        templateUrl: 'mymodal.html',
         controller: function($scope, $modalInstance, items) {
           $scope.paymentAmount = items;
           // console.log(items);

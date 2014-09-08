@@ -78,7 +78,8 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     resetForm();
 
     var ticker = setInterval(function(){
-      if (Global.user) {
+      if (Global.user && !$scope.newClientForm.loanOfficer) {
+        console.log(Global.user);
         $scope.newClientForm.loanOfficer = Global.user.name;
         $scope.$apply(); 
         clearInterval(ticker);

@@ -78,8 +78,10 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     resetForm();
 
     setTimeout(function(){
+      // console.log(Global.user);
       $scope.newClientForm.loanOfficer = Global.user.name;
-    }, 500);
+      $scope.$apply();
+    }, 100);
     
 
     $scope.create = function(isValid) {

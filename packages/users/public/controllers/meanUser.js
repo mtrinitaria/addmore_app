@@ -46,8 +46,8 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location',
-    function($scope, $rootScope, $http, $location) {
+  .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
+    function($scope, $rootScope, $http, $location, Global) {
       $scope.user = {};
 
       $scope.register = function() {
@@ -64,7 +64,7 @@ angular.module('mean.users')
             // authentication OK
             $scope.registerError = 0;
             $rootScope.user = $scope.user;
-            Global.user = response.user;
+            Global.user = $scope.user;
             $rootScope.$emit('loggedin');
             $location.url('/');
           })
@@ -79,8 +79,8 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('ForgotPasswordCtrl', ['$scope', '$rootScope', '$http', '$location',
-    function($scope, $rootScope, $http, $location) {
+  .controller('ForgotPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
+    function($scope, $rootScope, $http, $location, Global) {
       $scope.user = {};
       $scope.forgotpassword = function() {
         $http.post('/forgot-password', {
@@ -95,8 +95,8 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('ResetPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', '$stateParams',
-    function($scope, $rootScope, $http, $location, $stateParams) {
+  .controller('ResetPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', '$stateParams', 'Global',
+    function($scope, $rootScope, $http, $location, $stateParams, Global) {
       $scope.user = {};
       $scope.resetpassword = function() {
         $http.post('/reset/' + $stateParams.tokenId, {

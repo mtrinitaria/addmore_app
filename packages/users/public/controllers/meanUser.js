@@ -127,28 +127,60 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('UsersController', ['$scope', '$stateParams', '$rootScope', '$http', '$location', 'dateFilter', 'Global', 'MeanUser', 'Clients', 'OfficersClients', 'OfficersStats',
+  .controller('UsersController', ['$scope', '$stateParams', '$rootScope', '$http', '$location', 'dateFilter', 'Global', 'MeanUser', 'Clients', 'OfficersClients', 'OfficersStats', 
     function($scope, $stateParams, $rootScope, $http, $location, dateFilter, Global, MeanUser, Clients, OfficersClients, OfficersStats) {
       $scope.users = [];
 
-      $scope.update = function(isValid) {
-        if (isValid) {
-          var user = $scope.user;
+      $scope.userRoles = [
+        { name:'Admin', value:'admin' } ,
+        { name:'Encoder', value:'encoder' } ,
+        { name:'Loan Officer', value:'loanOfficer' }
+      ];
+      // $scope.userRoles.super = $scope.userRoles[0];
+      // $scope.userRoles.encoder = $scope.userRoles[1];
+      // $scope.userRoles.loanOfficer = $scope.userRoles[2];
+
+      $scope.update = function(userId, role) {
+        // console.log('isafs', userId, role);
+        $http.post('/usersrole/' + userId + '/' + role, {
+          userId: userId,
+          role: role
+        })
+          .success(function(response) {
+            console.log('response');
+          });
+
+        /*return;
+        MeanUser.get({
+          userId: userId
+        }, function(user) {
+          
+          // user.addmoreRole = role;
+          console.log(user);
+
+          switch (role) {
+            case 'super': 
+              user.role = $scope.userRoles[0];
+            break;
+            case 'encoder': 
+              user.role = $scope.userRoles[1];
+            break;
+            case 'loanOfficer': 
+              user.role = $scope.userRoles[2];
+            break;
+          }
           if (!user.updated) {
             user.updated = [];
           }
           user.updated.push(new Date().getTime());
+          // console.log(new OfficersClients());
+          // OfficersClients.query(function(user) {
+          //   console.log('user', user);
+          // });
+          user.$update(function(){
 
-
-          // user.loanAmount = parseFloat(user.loanAmount.split(',').join('');
-          // user.outstandingBalance = user.outstandingBalance.split(',').join('');
-
-          user.$update(function() {
-            // $location.path('users/' + user._id);
           });
-        } else {
-          $scope.submitted = true;
-        }
+        });*/
       };
 
       // Global.myuser = 'ahehe';
@@ -158,15 +190,25 @@ angular.module('mean.users')
           // check user's role
           for (var i = users.length - 1; i >= 0; i-=1) {
             var user = users[i];
-            if (user.roles.indexOf('super') !== -1) {
-              user.role = 'super';
-            } else if (user.roles.indexOf('supervisor') !== -1) {
-              user.role = 'supervisor';
-            } else if (user.roles.indexOf('encoder') !== -1) {
-              user.role = 'encoder';
+            if (user.role) {
+              // console.log(user.name, user.role);
+              switch (user.role) {
+                case 'super': 
+                  user.roleObj = $scope.userRoles[0];
+                break;
+                case 'encoder': 
+                  user.roleObj = $scope.userRoles[1];
+                break;
+                case 'loanOfficer': 
+                  user.roleObj = $scope.userRoles[2];
+                break;
+              }
             }
           }
+
+          // console.log(users);
           $scope.users = users;
+
         });
       };
 
@@ -174,7 +216,7 @@ angular.module('mean.users')
         MeanUser.get({
           userId: $stateParams.userId
         }, function(user) {
-          if (user.roles.indexOf('super') !== -1) {
+          /*if (user.roles.indexOf('super') !== -1) {
             user.role = 'super';
           } else if (user.roles.indexOf('supervisor') !== -1) {
             user.role = 'supervisor';
@@ -182,7 +224,7 @@ angular.module('mean.users')
             user.role = 'encoder';
           } else {
             user.role = 'none';
-          }
+          }*/
 
           user.created = dateFilter(new Date(user.created), 'yyyy-MM-dd');
 

@@ -9,7 +9,7 @@
       <tr>
         <th>Name</th>
         <th>Email</th>
-        <th>Roles</th>
+        <th>Role</th>
       </tr>
     </thead>
     <tbody>
@@ -22,11 +22,20 @@
               <label class="btn btn-primary" ng-model="data.checkRoles.supervisor" btn-checkbox>Supervisor</label>
               <label class="btn btn-primary" ng-model="data.checkRoles.encoder" btn-checkbox>Encoder</label>
           </div> -->
-          <div class="btn-group">
+          <!-- <div class="btn-group">
             <label class="btn btn-primary" ng-model="data.role" btn-radio="'super'">Super</label>
             <label class="btn btn-primary" ng-model="data.role" btn-radio="'supervisor'">Supervisor</label>
             <label class="btn btn-primary" ng-model="data.role" btn-radio="'encoder'">Encoder</label>
-          </div>
+          </div> -->
+          <select name="data.name" class="form-control" 
+            ng-model="data.roleObj" 
+            ng-options="item as item.name for item in userRoles" 
+            ng-change="update(data._id, data.roleObj.value)"
+            tooltip="Change the Role of {{data.name}}" tooltip-placement="left"
+            required>
+          </select>
+
+          <!-- <button ng-show="payment.status === 1" class="glyphicon glyphicon-star btn btn-success" tooltip="Already paid" tooltip-placement="left" ng-click="updatePayStatus(payment)"></button> -->
         </td>
       </tr>
     </tbody>

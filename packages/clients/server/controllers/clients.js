@@ -68,48 +68,6 @@ exports.update = function(req, res, next) {
     }
     res.json(client);
   });
-
-  /*var colData = {};
-  colData.clientId = realBody._id;
-  colData.userId = userCollection.userId;
-  colData.collectionAmount = userCollection.collectedAmount;
-  var collection = new Collection(colData);
-
-  collection.save(function(err, col) {
-    // if (err) {
-    //   return res.json(500, {
-    //     error: 'Cannot save the collection'
-    //   });
-    // }
-    // res.json(collection);
-    res.json(colData);
-    console.log('##########save', col);
-
-  });*/
-
-
-
-  // console.log('...userCollection', userCollection);
-
-  /*User.findOne({
-    _id: userCollection.userId
-  }, function(err, user) {
-    // console.log(err, user, userCollection.userId);
-    if (!user.collections) {
-      user.collections = [];
-    }
-    user.collections.push(userCollection.collectedAmount);
-    user.save(function(err) {
-      if (err) return next(err);
-      return res.send({
-        user: user
-      });
-    });
-
-  });*/
-
-  // var user = eq.body.userCollection;
-  // user = _.extend(user, )
 };
 
 /**

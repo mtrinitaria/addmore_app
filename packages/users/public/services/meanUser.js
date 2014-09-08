@@ -27,7 +27,8 @@ angular.module('mean.clients').factory('OfficersClients', ['$resource',
 angular.module('mean.clients').factory('OfficersStats', ['$resource',
   function($resource) {
     return $resource('officersstats/:userId', {
-      userId: '@_id'
+      userId: '@_id',
+      role: '@_role'
     }, {
       update: {
         method: 'PUT'

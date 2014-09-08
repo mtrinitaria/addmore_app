@@ -11,7 +11,8 @@ var mongoose = require('mongoose'),
   config = require('meanio').loadConfig(),
   crypto = require('crypto'),
   nodemailer = require('nodemailer'),
-  templates = require('../template');
+  templates = require('../template')/*,
+  _ = require('lodash')*/;
 
 /**
  * Auth callback
@@ -51,6 +52,94 @@ exports.all = function(req, res) {
     res.json(users);
 
   });
+};
+
+/**
+ * Update an article
+ */
+exports.update = function(req, res) {
+  // var user = req.user;
+  /*console.log('##############');
+  console.log(user.body);
+  console.log('##############');
+
+  user = _.extend(user, req.body);
+
+
+  user.save(function(err) {
+    // if (err) {
+    //   return res.json(500, {
+    //     error: 'Cannot update the user'
+    //   });
+    // }
+    // res.json(user);
+    console.log(user);
+
+  });*/
+};
+exports.usersroleupdate = function(req, res) {
+  // var user = req.user;
+
+  console.log('req.params.userId', req.params.userId, req.params);
+  User.findOne({
+    _id: req.params.userId
+  }, function(err, user) {
+    console.log(err,user);
+    user.role = req.params.role;
+    user.save(function(err) {
+      // req.logIn(user, function(err) {
+        // if (err) return next(err);
+        // return res.send({
+        //   user: user,
+        // });
+      // });
+    });
+    /*if (err) {
+      return res.status(400).json({
+        msg: err
+      });
+    }
+    if (!user) {
+      return res.status(400).json({
+        msg: 'Token invalid or expired'
+      });
+    }
+    req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
+    req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+    var errors = req.validationErrors();
+    if (errors) {
+      return res.status(400).send(errors);
+    }
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    user.save(function(err) {
+      req.logIn(user, function(err) {
+        if (err) return next(err);
+        return res.send({
+          user: user,
+        });
+      });
+    });*/
+  });
+
+  /*console.log('##############');
+  console.log(user.body);
+  console.log('##############');
+
+  user = _.extend(user, req.body);
+
+
+  user.save(function(err) {
+    // if (err) {
+    //   return res.json(500, {
+    //     error: 'Cannot update the user'
+    //   });
+    // }
+    // res.json(user);
+    console.log(user);
+
+  });*/
 };
 
 var officersclientsUserId;

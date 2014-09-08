@@ -5,12 +5,13 @@ var users = require('../controllers/users');
 
 
 // Article authorization helpers
-/*var hasAuthorization = function(req, res, next) {
-  if (!req.user.isAdmin && req.article.user.id !== req.user.id) {
-    return res.send(401, 'User is not authorized');
-  }
-  next();
-};*/
+// var hasAuthorization = function(req, res, next) {
+//   console.log(req.user)
+//   // if (!req.user.isAdmin && req.article.user.id !== req.user.id) {
+//   //   return res.send(401, 'User is not authorized');
+//   // }
+//   next();
+// };
 
 // var officersclientsUserId;
 
@@ -20,7 +21,11 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     .get(users.all);
 
   app.route('/users/:userId')
-    .get(users.userprofile);
+    .get(users.userprofile)
+    .put(auth.requiresLogin, users.update);
+
+  app.route('/usersrole/:userId/:role')
+    .post(users.usersroleupdate);
 
 
   app.route('/officersclients')

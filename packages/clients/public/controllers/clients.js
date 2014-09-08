@@ -90,6 +90,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
     $scope.create = function(isValid) {
       if (isValid) {
+        console.log('pumasok');
         // values of input and select element
         var clientData = {};
         for (var i = 0, len = $scope.newClientForm.length; i < len; i+=1) {
@@ -141,6 +142,13 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
         // set loan officer
         clientData.loanOfficer = {_id:Global.user._id, name:Global.user.name};
+
+        // save new client
+        var client = new Clients(clientData);
+        client.$save(function(response) {
+          $location.path('clients/' + response._id);
+          // console.log(response);
+        });
 
         // $scope.submitted = false;
         resetForm();
@@ -271,10 +279,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       });
 
       modalInstance.result.then(function (paid) {
-        // console.log(paid, paid.paymentType, paid.paidAmount, payment.paymentAmount);
-
         // update status
-        // payment.status = (payment.status === 1 ? 0 : 1);
         switch (paid.paymentType) {
           case 'full':
             payment.status = 1; 

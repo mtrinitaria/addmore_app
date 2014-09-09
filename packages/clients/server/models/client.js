@@ -52,18 +52,19 @@ var ClientSchema = new Schema({
   },
   terms: {
     type:Object,
-    required:true,
-    trim:true
+    required:true
+  },
+  interestRate: {
+    type:Object,
+    required:true
   },
   loanType: {
     type:Object,
-    required:true,
-    trim:true
+    required:true
   },
   loanStatus: {
     type:Object,
-    required:true,
-    trim:true
+    required:true
   },
   loanCycle: {
     type:String,

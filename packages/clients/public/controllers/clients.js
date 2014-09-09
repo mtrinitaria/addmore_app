@@ -37,7 +37,8 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       { label:'ID Number', type:'text', id:'idNumber' } ,
       { label:'Co-Maker', type:'text', id:'coMaker' } ,
       { label:'Loan Amount', type:'text', id:'loanAmount' } ,
-      { label:'Terms', type:'select', list:[{name:'90', terms:90, rate:0.135, weeks:12, days:90}, {name:'120', terms:120, rate:0.18, weeks:17, days:120}], id:'terms' } ,
+      { label:'Terms', type:'select', list:[{name:'90', terms:90, weeks:12, days:90, months:3}, {name:'120', terms:120, weeks:17, days:120, months:4}], id:'terms' } ,
+      { label:'Interest Rate', type:'select', list:[{name:'3.5%', rate:0.035}, {name:'4.5%', rate:0.045}, {name:'5%', rate:0.05 }], id:'interestRate' } ,
       { label:'Payment Frequency', type:'select', list:[{name:'Daily'}, {name:'Weekly'}], id:'paymentFrequency' } ,
       { label:'Loan Type', type:'select', list:[{name:'Line 1'}, {name:'Line 2'}, {name:'Emergency'}], id:'loanType' } ,
       { label:'Loan Status', type:'select', list:[{name:'New'}, {name:'Renewal'}], id:'loanStatus' } ,
@@ -51,11 +52,11 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     $scope.loanSummaries = [
       { label:'Loan Cycle:', value:0, id:'loanCycle' },
       { label:'Loan Amount:', value:0, id:'loanAmount' },
+      { label:'Terms:', value:0, id:'terms' },
       { label:'Interest Rate:', value:0, id:'interestRate' },
       { label:'Interest Amount:', value:0, id:'interestAmount' },
       { label:'Loan Amount + Interest:', value:0, id:'loanAmountInterest' },
-      { label:'Terms:', value:0, id:'terms' },
-      { label:'Release Date:', value:0, id:'releaseDate' },
+      { label:'Release Date:', value:0, unlink:'/clients/new', id:'releaseDate' },
       { label:'Maturity Date:', value:0, unlink:'/clients/new', id:'maturityDate' },
       { label:'Daily Amortization:', value:0, unlink:'/clients/new', id:'amortization' },
       { label:'Count:', value:0, unlink:'/clients/new', id:'count' },
@@ -104,7 +105,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         var DAY = 24 * 60 * 60 * 1000;
         var new_d,dd,mm,yy;
         var relDate = new Date($scope.newClientForm.releaseDate);
-        var loanPlusInterest = $scope.newClientForm.loanAmount * (1 + $scope.newClientForm.terms.rate);
+        var loanPlusInterest = $scope.newClientForm.loanAmount * (1 + $scope.newClientForm.interestRate.rate);
         var payAmt = loanPlusInterest / payLen;
 
         for (i=0;i < payLen; i+=1) {
@@ -191,16 +192,17 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
         $scope.loanSummaries.loanCycle.value = client.loanCycle;
         $scope.loanSummaries.loanAmount.value = client.loanAmount;
-        $scope.loanSummaries.interestRate.value = (client.terms.rate * 100) + '%';
-        $scope.loanSummaries.interestAmount.value = toCurrency(loan_amt * client.terms.rate);
+        // $scope.loanSummaries.interestRate.value = (client.interestRate.rate * 100) + '%';
+        $scope.loanSummaries.interestRate.value = client.interestRate.name;
+        $scope.loanSummaries.interestAmount.value = toCurrency(loan_amt * client.interestRate.rate);
 
-        $scope.loanSummaries.loanAmountInterest.value = toCurrency(loan_amt * (1 + client.terms.rate));
+        $scope.loanSummaries.loanAmountInterest.value = toCurrency(loan_amt * (1 + client.interestRate.rate));
         $scope.loanSummaries.terms.value = client.terms.name;
         $scope.loanSummaries.releaseDate.value = client.releaseDate;
         $scope.loanSummaries.maturityDate.value = client.paymentsSchedule[client.paymentsSchedule.length - 1].date;
 
         $scope.loanSummaries.amortization.label = client.paymentFrequency.name;
-        $scope.loanSummaries.amortization.value = toCurrency(loan_amt * (1 + client.terms.rate) / (client.paymentFrequency.name === 'Weekly' ? client.terms.weeks : client.terms.days));
+        $scope.loanSummaries.amortization.value = toCurrency(loan_amt * (1 + client.interestRate.rate) / (client.paymentFrequency.name === 'Weekly' ? client.terms.weeks : client.terms.days));
 
         var now = new Date();
         var rel_date = new Date(client.releaseDate);

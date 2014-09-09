@@ -37,7 +37,7 @@ angular.module('mean.clients').directive('addwatch',
               rate = $scope.newClientForm.interestRate.rate || 0;
               loan_amt = $scope.newClientForm.loanAmount || 0;
               months = newValue.months || 0;
-              console.log('terms', loan_amt , rate , months);
+              // console.log('terms', loan_amt , rate , months);
               // $scope.loanSummaries.interestRate.value = (rate * 100) + '%';
               $scope.loanSummaries.interestAmount.value = toCurrency(loan_amt * rate * months);
               $scope.loanSummaries.loanAmountInterest.value = toCurrency(loan_amt * (1 + (rate * months)));
@@ -49,7 +49,7 @@ angular.module('mean.clients').directive('addwatch',
               rate = newValue.rate || 0;
               loan_amt = $scope.newClientForm.loanAmount || 0;
               months = $scope.newClientForm.terms.months || 0;
-              console.log('interestRate', loan_amt , rate , months);
+              // console.log('interestRate', loan_amt , rate , months);
               $scope.loanSummaries.interestAmount.value = toCurrency(loan_amt * rate * months);
               $scope.loanSummaries.loanAmountInterest.value = toCurrency(loan_amt * (1 + (rate * months)));
               $scope.loanSummaries.terms.value = newValue.name || '0';

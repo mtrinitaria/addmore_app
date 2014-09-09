@@ -23,6 +23,8 @@ module.exports = function(Clients, app, auth, database) {
     .put(auth.requiresLogin, hasAuthorization, clients.update)
     .delete(auth.requiresLogin, hasAuthorization, clients.destroy);
 
+  app.route('/loanofficers')
+    .get(clients.loanofficers);
 
   // app.get('/officerclients', function(req, res, next) {
   //   console.log(req);

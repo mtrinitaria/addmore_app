@@ -11,8 +11,8 @@ function toNumber(x) {
   return parseFloat(x);
 }
 
-angular.module('mean.clients').controller('ClientsController', ['$scope', '$stateParams', '$location', 'dateFilter', 'Global', 'Clients', 'Payments', '$modal', 
-  function($scope, $stateParams, $location, dateFilter, Global, Clients, Payments, $modal) {
+angular.module('mean.clients').controller('ClientsController', ['$scope', '$stateParams', '$location', '$http', 'dateFilter', 'Global', 'Clients', 'Payments', '$modal', 
+  function($scope, $stateParams, $location, $http, dateFilter, Global, Clients, Payments, $modal) {
     $scope.global = Global;
     $scope.package = {
       name: 'clients'
@@ -21,14 +21,19 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     // console.log('$scope.global', $scope.global);
 
     $scope.scheulePayments = [];
-
-    // console.log($stateParams, $location.path() , Global);
+    $scope.loanOfficers = [];
     $scope.locPath = $location.path();
+
+    // get loanOfficers in Global.users;
+    // for (var i = Global.users.length - 1; i >= 0; i-=1) {
+    //   console.log(Global.users[i]);
+    // }
 
     /*
     to select the ng-model use:
     $scope.newClientForm.terms
     */
+
     $scope.newClientForm = [
       { label:'Client Name', type:'text', id:'clientName' } ,
       { label:'Address', type:'text', id:'address1' } ,
@@ -46,9 +51,9 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       { label:'Processing Fee', type:'select', list:[{name:'3.5%', rate:0.035}, {name:'4.5%', rate:0.045}, {name:'5%', rate:0.05}], id:'processingFee' } ,
       { label:'Release Date', type:'date', id:'releaseDate' } ,
       { label:'Loan Cycle', type:'text', id:'loanCycle' } ,
-      { label:'Loan Officer', type:'pre', id:'loanOfficer' }
+      { label:'Loan Officer', type:'select', list:[], id:'loanOfficer' }
+      // { label:'Loan Officer', type:'pre', id:'loanOfficer' }
     ];
-    
     $scope.loanSummaries = [
       { label:'Loan Cycle:', value:0, id:'loanCycle' },
       { label:'Loan Amount:', value:0, id:'loanAmount' },
@@ -76,22 +81,46 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         $scope.loanSummaries[$scope.loanSummaries[i].id] = $scope.loanSummaries[i];
       }
     };
+
+
     resetForm();
 
-    var ticker = setInterval(function(){
-      console.log(Global.user.name, $scope.newClientForm.loanOfficer);
+    $scope.getLoanOfficers = function() {
+
+      $http.get('/loanofficers')
+        .success(function(loanOfficers) {
+          console.log('loanOfficers', loanOfficers);
+          // $scope.loanOfficers = loanOfficers;
+          // $scope.newClientForm[]
+          for (var i = $scope.newClientForm.length - 1; i >= 0; i-=1) {
+            if ($scope.newClientForm[i].id === 'loanOfficer') {
+              $scope.newClientForm[i].list = loanOfficers;
+              break;
+            }
+          }
+          // $scope.newClientForm.loanOfficer.list = loanOfficers;
+          // console.log('....', $scope.newClientForm[$scope.newClientForm.loanOfficer, $scope.newClientForm.loanOfficer);
+
+        });
+    };
+
+    
+    
+
+    /*var ticker = setInterval(function(){
+      // console.log(Global.user.name, $scope.newClientForm.loanOfficer);
       if (Global.user.name && !$scope.newClientForm.loanOfficer) {
         
         $scope.newClientForm.loanOfficer = Global.user.name;
         $scope.$apply(); 
         clearInterval(ticker);
       }
-    }, 500);
+    }, 500);*/
     
 
     $scope.create = function(isValid) {
       if (isValid) {
-        console.log('pumasok');
+        // console.log('pumasok');
         // values of input and select element
         var clientData = {};
         for (var i = 0, len = $scope.newClientForm.length; i < len; i+=1) {
@@ -142,7 +171,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         clientData.totalAmountPaid = 0;
 
         // set loan officer
-        clientData.loanOfficer = {_id:Global.user._id, name:Global.user.name};
+        clientData.loanOfficer = {_id:$scope.newClientForm.loanOfficer._id, name:$scope.newClientForm.loanOfficer.name};
 
         // save new client
         var client = new Clients(clientData);

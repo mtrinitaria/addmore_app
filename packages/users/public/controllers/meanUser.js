@@ -147,40 +147,9 @@ angular.module('mean.users')
           role: role
         })
           .success(function(response) {
-            console.log('response');
+            // console.log('response');
           });
 
-        /*return;
-        MeanUser.get({
-          userId: userId
-        }, function(user) {
-          
-          // user.addmoreRole = role;
-          console.log(user);
-
-          switch (role) {
-            case 'super': 
-              user.role = $scope.userRoles[0];
-            break;
-            case 'encoder': 
-              user.role = $scope.userRoles[1];
-            break;
-            case 'loanOfficer': 
-              user.role = $scope.userRoles[2];
-            break;
-          }
-          if (!user.updated) {
-            user.updated = [];
-          }
-          user.updated.push(new Date().getTime());
-          // console.log(new OfficersClients());
-          // OfficersClients.query(function(user) {
-          //   console.log('user', user);
-          // });
-          user.$update(function(){
-
-          });
-        });*/
       };
 
       // Global.myuser = 'ahehe';
@@ -193,7 +162,7 @@ angular.module('mean.users')
             if (user.role) {
               // console.log(user.name, user.role);
               switch (user.role) {
-                case 'super': 
+                case 'admin': 
                   user.roleObj = $scope.userRoles[0];
                 break;
                 case 'encoder': 

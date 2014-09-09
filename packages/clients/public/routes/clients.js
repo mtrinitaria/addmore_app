@@ -22,7 +22,7 @@ angular.module('mean.clients').config(['$stateProvider',
         }
       });
 
-      console.log(deferred.promise);
+      // console.log(deferred.promise);
 
       return deferred.promise;
     };

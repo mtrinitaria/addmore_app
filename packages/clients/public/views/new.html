@@ -1,4 +1,4 @@
-<section data-ng-controller="ClientsController">
+<section data-ng-controller="ClientsController" data-ng-init="getLoanOfficers()">
   <form name="entryForm" class="form-horizontal col-md-6" role="form" data-ng-submit="create(entryForm.$valid)" novalidate>
 
     <div ng-repeat="form in newClientForm" class="form-group" ng-class="{'has-error' : submitted && !newClientForm[form.id] }" >

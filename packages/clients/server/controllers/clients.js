@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
   Client = mongoose.model('Client'),
+  User = mongoose.model('User'),
   // Collection = mongoose.model('Collection'),
   _ = require('lodash');
 
@@ -151,5 +152,19 @@ exports.officerclients = function(req, res, next) {
     res.json(datas);
     // console.log(clients);
     next();
+  });
+};
+
+
+exports.loanofficers = function(req, res) {
+  User.find().where('role', 'loanOfficer').sort('-created').limit(500).select('name').populate('user', 'name username').exec(function(err, users) {
+    
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot list the clients'
+      });
+    }
+    // res.json(clients);
+    res.json(users);
   });
 };

@@ -6,11 +6,7 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', 'Glo
     $scope.package = {
       name: 'payments'
     };
-
-    console.log('ahehe');
-
     $scope.global.createPayment = function(clientId, userId, amount) {
-      console.log('craet payment');
       var payment = new Payments({
         clientId: clientId,
         userId: userId,

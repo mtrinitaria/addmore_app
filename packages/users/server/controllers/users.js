@@ -84,7 +84,9 @@ exports.usersroleupdate = function(req, res) {
   User.findOne({
     _id: req.params.userId
   }, function(err, user) {
-    console.log(err,user);
+    console.log(user);
+    console.log('###############');
+    console.log('###############', req.params.role);
     user.role = req.params.role;
     user.save(function(err) {
       // req.logIn(user, function(err) {
@@ -122,24 +124,6 @@ exports.usersroleupdate = function(req, res) {
       });
     });*/
   });
-
-  /*console.log('##############');
-  console.log(user.body);
-  console.log('##############');
-
-  user = _.extend(user, req.body);
-
-
-  user.save(function(err) {
-    // if (err) {
-    //   return res.json(500, {
-    //     error: 'Cannot update the user'
-    //   });
-    // }
-    // res.json(user);
-    console.log(user);
-
-  });*/
 };
 
 var officersclientsUserId;

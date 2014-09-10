@@ -18,11 +18,11 @@ var PaymentSchema = new Schema({
   clientId: {
     type: String
   },
-  userId: {
+  loanOfficer: {
     type: String
   },
-  amount: {
-    type: Number
+  payments: {
+    type: Array
   }
 });
 

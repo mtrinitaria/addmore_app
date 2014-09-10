@@ -1,0 +1,81 @@
+<section data-ng-controller="PaymentsController" data-ng-init="find()">
+  
+  <form class="form-inline" role="form">
+    <div class="form-group">
+      <div class="input-group col-sm-4">
+        <div class="input-group-addon">Search <span class="glyphicon glyphicon-search search-icon"></span></div>
+        <input class="form-control" type="text" placeholder="Search client name" ng-model="searchSelected" typeahead="item.clientName for item in clients | filter:$viewValue | limitTo:8">
+      </div>
+    </div>
+  </form>
+
+  <table class="table table-striped text-center">
+    <thead>
+      <tr>
+        <th>Client Name</th>
+        <!-- <th>Loan Officer</th> -->
+        <th>Payments</th>
+        <th>Outstanding Balance</th>
+        <th>Payments Total</th>
+        <th>Outstanding - Payments</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="text-left" ng-repeat="client in clients | filter:searchSelected track by $index">
+        <td class="text-center col-sm-2"><a data-ng-href="#!/clients/{{client._id}}">{{client.clientName}}</a></td>
+        <!-- <td class="text-left col-sm-2">
+          <select class="form-control" 
+            ng-model="clients[client._id]" 
+            ng-options="item as item.name for item in loanOfficers" 
+            required>
+          </select>
+        </td> -->
+        <td class="text-left col-sm-4">
+          <a data-ng-href="#!/clients/{{client._id}}/payments" ng-hide="true" tooltip="View payments history of {{client.clientName}}" tooltip-placement="top">History</a>
+          
+          <form ngForm name="clientForm" class="form-inline" role="form" data-ng-submit="create(clientForm.$valid, client, client.paymentData.loanOfficer)" novalidate>
+            <select name="client.paymentData.loanOfficer" class="form-control" 
+              ng-model="client.paymentData.loanOfficer" 
+              ng-options="item as item.name for item in loanOfficers" 
+              ng-class="{'has-error' : submitted }"
+              required>
+              <option value="">Select Loan Officer</option>
+            </select>
+            <div ng-repeat="form in client.payments" ng-class="{'has-error' : submitted }">
+                <input type="text" ng-model="form.paidAmount" ng-change="paid(client)" required>
+                <input type="text" ng-model="form.date" 
+                  datepicker-popup="yyyy/MM/dd"
+                  init-date="initDate"
+                  is-open="clientForm.form.date[$index].open"
+                  ng-click="clientForm.form.date[$index].open = true"
+                  min-date="minDate"
+                  max-date="maxDate"
+                  datepicker-options="dateOptions"
+                  date-disabled="disabled(date, mode)" 
+                  ng-required="true"
+                  close-text="Close"
+                  placeholder="yyyy/MM/dd"
+                  required>
+                <i class="glyphicon glyphicon-remove btn" tooltip="Remove" tooltip-placement="right" ng-click="removeField(client, $index)"></i>
+            </div>
+            <button type="submit" ng-disabled="client.payments.length == 0" class="btn btn-primary btn-sm" >Save</button>
+            <button type="button" class="btn btn-success btn-sm" tooltip="Add payments" tooltip-placement="right" ng-click="addField(client)"><i class="glyphicon glyphicon-plus"></i></button>
+          </form>
+
+        </td>
+        <!-- <td>
+          <table class="table text-right">
+            <tr><td><span class="pull-left"><strong>Outstanding Balance:</strong></span>{{client.outstandingBalance}}</td></tr>
+            <tr><td><span class="pull-left"><strong>Payments:</strong></span>{{paymentsTotal(client)}}</td></tr>
+            <tr><td><span class="pull-left"><strong>Outstanding - Payment:</strong></span>{{nextOutstandingBalance(client)}}</td></tr>
+          </table>
+        </td> -->
+        <td>{{client.summary.balance}}</td>
+        <td>{{client.summary.payments}}</td>
+        <td>{{client.summary.nextBalance}}</td>
+
+      </tr>
+    </tbody>
+  </table>
+
+</section>

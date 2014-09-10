@@ -84,9 +84,6 @@ exports.usersroleupdate = function(req, res) {
   User.findOne({
     _id: req.params.userId
   }, function(err, user) {
-    console.log(user);
-    console.log('###############');
-    console.log('###############', req.params.role);
     user.role = req.params.role;
     user.save(function(err) {
       // req.logIn(user, function(err) {

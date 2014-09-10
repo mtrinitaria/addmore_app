@@ -10,6 +10,10 @@ module.exports = function(Payments, app, auth, database) {
     .post(auth.requiresLogin, payments.create);
 
 
+  app.route('/clientswbal')
+    .get(payments.clientswbal);
+
+
   /*app.get('/payments/example/anyone', function(req, res, next) {
     res.send('Anyone can access this');
   });

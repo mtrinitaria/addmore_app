@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
   Payment = mongoose.model('Payment'),
+  Client = mongoose.model('Client'),
   _ = require('lodash');
 
 
@@ -95,3 +96,18 @@ exports.all = function(req, res) {
 
   });
 };
+
+
+exports.clientswbal = function(req, res) {
+  Client.find().where('outstandingBalance').gt(0).sort('-created').populate('user', 'name username').select('clientName outstandingBalance').exec(function(err, payments) {
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot list the payments'
+      });
+    }
+    res.json(payments);
+
+  });
+};
+
+

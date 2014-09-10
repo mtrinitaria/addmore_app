@@ -23,6 +23,12 @@ Payments.register(function(app, auth, database) {
     roles: ['authenticated'],
     menu: 'main'
   });*/
+  Payments.menus.add({
+    title: 'Payments',
+    link: 'all payments',
+    roles: ['authenticated'],
+    menu: 'main'
+  });
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above

@@ -10,6 +10,17 @@ angular.module('mean.clients').factory('Clients', ['$resource',
       }
     });
   }
+]).factory('Clients', ['$resource',
+  function($resource) {
+    return $resource('clients/:clientId/balance/:balance', {
+      clientId: '@_id',
+      balance: '@balance',
+    }, {
+      update: {
+        method: 'PUT'
+      }
+    });
+  }
 ]);
 
 angular.module('mean.users').factory('MeanUser', ['$resource',

@@ -96,21 +96,21 @@ var ClientSchema = new Schema({
     required:true,
     trim:true
   },
-  paymentsSchedule: {
+  /*paymentsSchedule: {
     type:Array,
     required:true,
     trim:true
-  },
+  },*/
   outstandingBalance: {
     type:Number,
     required:true,
     trim:true
   },
-  nextPayment: {
+  /*nextPayment: {
     type:Object,
     required:true,
     trim:true
-  },
+  },*/
   totalAmountPaid: {
     type:Number,
     required:true,

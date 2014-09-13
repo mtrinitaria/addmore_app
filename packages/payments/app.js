@@ -52,5 +52,7 @@ Payments.register(function(app, auth, database) {
     });
     */
 
+    Payments.aggregateAsset('css', 'payments.css');
+
   return Payments;
 });

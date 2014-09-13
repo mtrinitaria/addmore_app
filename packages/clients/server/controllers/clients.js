@@ -168,3 +168,70 @@ exports.loanofficers = function(req, res) {
     res.json(users);
   });
 };
+
+exports.clientsbalance = function(req, res) {
+  console.log(req.params);
+/*
+  // console.log(req);
+  var realBody = {};
+  var userCollection;
+  for (var n in req.body) {
+    if (n !== 'userCollection') {
+      realBody[n] = req.body[n];
+    } else {
+      userCollection = req.body[n];
+      console.log('req.body[n]', req.body[n]);
+    }
+  }
+
+  // client = _.extend(client, req.body);
+  client = _.extend(client, realBody);
+
+  client.save(function(err) {
+    if (err) {
+      return res.json(500, {
+        error: 'Cannot update the client'
+      });
+    }
+    res.json(client);
+  });*/
+
+  Client.findOne({
+    _id: req.params.clientId
+  }, function(err, client) {
+    console.log(client);
+    client.outstandingBalance = req.params.balance;
+    client.save(function(err) {
+      // req.logIn(user, function(err) {
+        // if (err) return next(err);
+        // return res.send({
+        //   user: user,
+        // });
+      // });
+      res.json(client);
+    });
+  });
+
+
+
+  /*Client.find().where('_id', req.params._id).sort('-created').populate('user', 'name username').exec(function(err, client) {
+    console.log(client);
+    req.body.outstandingBalance = req.params.balance;
+    client = _.extend(client, req.body);    
+    client.save(function(err) {
+      // if (err) {
+      //   return res.json(500, {
+      //     error: 'Cannot update the client'
+      //   });
+      // }
+      res.json(client);
+    });
+    // if (err) {
+    //   return res.json(500, {
+    //     error: 'Cannot list the clients'
+    //   });
+    // }
+    // // res.json(clients);
+    // res.json(users);
+  });*/
+};

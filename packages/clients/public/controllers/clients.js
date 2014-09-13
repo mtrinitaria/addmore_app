@@ -69,7 +69,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       { label:'Discrepancy:', value:0, unlink:'/clients/new', id:'discrepancy' },
       { label:'Total Amount Paid:', value:0, unlink:'/clients/new', id:'totalAmountPaid' },
       { label:'Outstanding Balance:', value:0, unlink:'/clients/new', id:'outstandingBalance' },
-      { label:'Next Payment Schedule:', value:0, unlink:'/clients/new', id:'nextPayment' }
+      // { label:'Next Payment Schedule:', value:0, unlink:'/clients/new', id:'nextPayment' }
     ];
 
 
@@ -258,7 +258,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         $scope.loanSummaries.discrepancy.value = 0;
         $scope.loanSummaries.totalAmountPaid.value = toCurrency(client.totalAmountPaid);
         $scope.loanSummaries.outstandingBalance.value = toCurrency(client.outstandingBalance);
-        $scope.loanSummaries.nextPayment.value = dateFilter(client.nextPayment, DATE_FORMAT);
+        // $scope.loanSummaries.nextPayment.value = dateFilter(client.nextPayment, DATE_FORMAT);
 
       });
     };

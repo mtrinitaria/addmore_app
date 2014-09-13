@@ -80,7 +80,7 @@ exports.update = function(req, res) {
 exports.usersroleupdate = function(req, res) {
   // var user = req.user;
 
-  console.log('req.params.userId', req.params.userId, req.params);
+  // console.log('req.params.userId', req.params.userId, req.params);
   User.findOne({
     _id: req.params.userId
   }, function(err, user) {

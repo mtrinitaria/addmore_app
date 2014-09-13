@@ -125,14 +125,15 @@ exports.usersroleupdate = function(req, res) {
 
 var officersclientsUserId;
 exports.officersclients = function(req, res) {
-  Client.find().sort('-created').where('loanOfficer._id', officersclientsUserId).limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid paymentsSchedule').populate('user', 'name username').exec(function(err, clients) {
+  Client.find().sort('-created').where('loanOfficer._id', officersclientsUserId).limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid').populate('user', 'name username').exec(function(err, clients) {
     
     if (err) {
       return res.json(500, {
         error: 'Cannot list the clients'
       });
     }
-    var datas = [];
+    res.json(clients);
+    /*var datas = [];
     for (var i=0,len=clients.length;i<len;i+=1) {
       var dta = {};
       var client = clients[i];
@@ -147,6 +148,7 @@ exports.officersclients = function(req, res) {
     // res.json(clients);
     res.json(datas);
     // console.log(clients);
+    */
   });
 };
 exports.officersstats = function(req, res) {

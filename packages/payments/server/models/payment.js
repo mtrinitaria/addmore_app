@@ -21,8 +21,11 @@ var PaymentSchema = new Schema({
   loanOfficer: {
     type: String
   },
-  payDate: {
+  date: {
     type: Date
+  },
+  datetime: {
+    type: String
   },
   payAmount: {
     type: Number

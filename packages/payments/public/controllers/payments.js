@@ -32,29 +32,28 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
       });
       payment.$save(function(response) {
         // $location.path('payments/' + response._id);
-        console.log(response);
+        // console.log(response);
       });
     };
 
     // API
     $scope.find = function() {
       $http.get('/clientswbal').success(function(clients) {
-        $scope.clients = clients;
+        // console.log(clients);
         for (var i = clients.length - 1; i >= 0; i-=1) {
-          var client = clients[i];
+          var client = clients[i].client;
+          client.payments = clients[i].payments;
           client.summary = {
-            balance: toCurrency(client.outstandingBalance),
-            payments:0, 
-            nextBalance:0
+            outstandingBalance: toCurrency(client.outstandingBalance),
+            totalAmountPaid: toCurrency(client.totalAmountPaid)
           };
-          console.log(client);
-          /*client.paymentData = {
-            payments:[], 
-            loanOfficer: '',
-            clientId: '',
-            date: ''
-          };*/
+          // console.log(client);
+
+          for (var j=0;j < client.payments.length; j+=1) {
+            client.payments[client.payments[j].datetime] = client.payments[j].payAmount;
+          }
         }
+        $scope.clients = clients;
       });
 
       // get loan officers to populate in dorpdown
@@ -123,43 +122,38 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
 
       for (var i=0; i < 7; i+=1) {
         var d = new Date(first_day_monday.getTime() + (i * 3600 * 24 * 1000));
-        $scope.weeks[i] = {year:d.getFullYear(), date:dateFilter(d, 'MMM dd')};
+        $scope.weeks[i] = {year:d.getFullYear(), date:dateFilter(d, 'MMM dd'), datetime: new Date(dateFilter(d, 'yyyy MM dd')).getTime()};
       }
     };
     $scope.moveWeek(0);
 
-    $scope.blurPayment = function(client, loanOfficer, day, payAmount) {
-      // console.log('nag blu', client._id, loanOfficer, day, payAmount);
-      // console.log('nag blu', day, new Date(day), payAmount);
-      // console.log('nag blu', day);
-      console.log (client , loanOfficer , payAmount);
-      if (client._id && loanOfficer && payAmount) {
-        client.outstandingBalance = client.outstandingBalance - payAmount;
+    $scope.blurPayment = function(client, day, payAmount) {
+      if (client.client._id && payAmount) {
+        payAmount = parseFloat(payAmount);
         var data = {
-          payDate: day.year + ' ' + day.date,
-          loanOfficer: loanOfficer,
-          clientId: client._id,
+          date: day.year + ' ' + day.date,
+          datetime: day.datetime,
+          loanOfficer: client.client.loanOfficer,
+          clientId: client.client._id,
           payAmount: toNumber(payAmount)
         };
-        // console.log(data);
+
         var payment = new Payments(data);
         payment.$save(function(response) {
-          // $location.path('clients/' + response._id);
-          // console.log(response);
-          // client.payments.length = 0;
+          client.client.outstandingBalance = toNumber(client.client.loanAmountInterest) - response.totalAmountPaid;
+          client.client.totalAmountPaid = response.totalAmountPaid;
 
-          // console.log(client.totalAmountPaid);
+          client.client.summary = {
+            outstandingBalance: toCurrency(client.client.outstandingBalance),
+            totalAmountPaid: toCurrency(response.totalAmountPaid)
+          };
 
-          $http.post('/clients/' + client._id + '/balance/' + client.outstandingBalance).success(function() {
-            // $scope.loanOfficers = loanOfficers;
-            console.log('ahehe');
+          $http.post('/client/' + client.client._id + '/balance/' + client.client.outstandingBalance + '/paid/' + client.client.totalAmountPaid).success(function(response) {
+            // console.log('ahehe', response); 
           });
 
         });
 
-        // client.$update(function() {
-        //   $scope.global.createPayment(client._id, $scope.global.user._id, toNumber(payment.paidAmount));
-        // });
       }
     };
 

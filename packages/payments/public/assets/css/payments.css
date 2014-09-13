@@ -7,3 +7,7 @@
 .payments.table select {
 	width: 120px;
 }
+
+.table th {
+	text-align: center;
+}

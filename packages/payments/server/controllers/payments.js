@@ -25,10 +25,60 @@ exports.payment = function(req, res, next, id) {
  * Create an payment
  */
 exports.create = function(req, res) {
-  var payment = new Payment(req.body);
-  payment.user = req.user;
+  // var payment = new Payment(req.body);
+  // payment.user = req.user;
 
-  payment.save(function(err) {
+  // console.log('create', req.body);
+
+
+  Payment.find().where('datetime', req.body.datetime).sort('-created').exec(function(err, payments) {
+    /*data.push({client:client, payments:payments});
+    
+    ctr -= 1;
+    if (ctr === 0) {
+      res.json(data);
+    }*/
+    var payment;
+    if (payments.length === 0) {
+      payment = new Payment(req.body);
+    } else {
+      payment = _.extend(payments[0], req.body);
+    }
+    var clientId = req.body.clientId;
+    payment.save(function(err) {
+      // if (err) {
+      //   return res.json(500, {
+      //     error: 'Cannot save the payment'
+      //   });
+      // }
+      // res.json(payment);
+
+      Payment.find().where('clientId', clientId).select('payAmount').exec(function(err, payments) {
+        // if (err) {
+        //   return res.json(500, {
+        //     error: 'Cannot list the payments'
+        //   });
+        // }
+        // res.json(payments);
+        console.log('payments',payments);
+        var totalAmountPaid = 0;
+        for (var i = payments.length - 1; i >= 0; i-=1) {
+          totalAmountPaid += payments[i].payAmount;
+        }
+
+        res.json({totalAmountPaid: totalAmountPaid});
+
+
+      });
+
+    });
+    
+  });
+
+  console.log(req.body);
+
+
+  /*payment.save(function(err) {
     if (err) {
       return res.json(500, {
         error: 'Cannot save the payment'
@@ -36,7 +86,7 @@ exports.create = function(req, res) {
     }
     res.json(payment);
 
-  });
+  });*/
 };
 
 /**
@@ -99,13 +149,36 @@ exports.all = function(req, res) {
 
 
 exports.clientswbal = function(req, res) {
-  Client.find().where('outstandingBalance').gt(0).sort('-created').populate('user', 'name username').select('clientName outstandingBalance').exec(function(err, payments) {
-    if (err) {
-      return res.json(500, {
-        error: 'Cannot list the payments'
+  Client.find().where('outstandingBalance').gt(0).sort('-created').populate('user', 'name username').select('clientName loanOfficer totalAmountPaid outstandingBalance loanAmount interestRate').exec(function(err, clients) {
+    var ctr = clients.length;
+    var data = [];
+    function getPayments(client, i) {
+      
+      Payment.find().where('clientId', client._id).sort('-created').exec(function(err, payments) {
+        // var loanAmountInterest = client.loanAmount * (1 + client.interestRate.rate);
+        // console.log(loanAmountInterest);
+
+        // _id: "54149e5bc832c0abef26b6f2"clientName: "m"interestRate: ObjectloanAmount: 100000loanOfficer: Object outstandingBalance: 72640payments: Array[4]summary: ObjecttotalAmountPaid: 1532
+
+        data.push({client:{
+          _id:client._id,
+          clientName:client.clientName,
+          loanAmountInterest:client.loanAmount * (1 + client.interestRate.rate),
+          loanOfficer:client.loanOfficer,
+          totalAmountPaid:client.totalAmountPaid,
+          outstandingBalance:client.outstandingBalance
+        }, payments:payments});
+        
+        ctr -= 1;
+        if (ctr === 0) {
+          res.json(data);
+        }
+        
       });
     }
-    res.json(payments);
+    for (var i = clients.length - 1; i >= 0; i-=1) {
+      getPayments(clients[i], i);
+    }
 
   });
 };

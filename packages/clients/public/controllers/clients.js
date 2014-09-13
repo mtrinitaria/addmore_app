@@ -65,7 +65,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
       { label:'Maturity Date:', value:0, unlink:'/clients/new', id:'maturityDate' },
       { label:'Daily Amortization:', value:0, unlink:'/clients/new', id:'amortization' },
       { label:'Count:', value:0, unlink:'/clients/new', id:'count' },
-      { label:'Running Balance:', value:0, unlink:'/clients/new', id:'runningBalance' },
+      // { label:'Running Balance:', value:0, unlink:'/clients/new', id:'runningBalance' },
       { label:'Discrepancy:', value:0, unlink:'/clients/new', id:'discrepancy' },
       { label:'Total Amount Paid:', value:0, unlink:'/clients/new', id:'totalAmountPaid' },
       { label:'Outstanding Balance:', value:0, unlink:'/clients/new', id:'outstandingBalance' },
@@ -128,7 +128,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         }
         
         // generate schedule of payments
-        var paymentsSchedule = [];
+        /*var paymentsSchedule = [];
         var payLen = ($scope.newClientForm.paymentFrequency.name === 'Weekly' ? $scope.newClientForm.terms.weeks : $scope.newClientForm.terms.days);
         var WEEK = 7 * 24 * 60 * 60 * 1000;
         var DAY = 24 * 60 * 60 * 1000;
@@ -159,13 +159,14 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         }
 
         // above is the generated payment schedule
-        clientData.paymentsSchedule = paymentsSchedule;
+        clientData.paymentsSchedule = paymentsSchedule;*/
 
         // initial outstanding balance for new client is loan + interest
+        var loanPlusInterest = $scope.newClientForm.loanAmount * (1 + $scope.newClientForm.interestRate.rate);
         clientData.outstandingBalance = loanPlusInterest;
 
         // initial next payment is the first paymen schedule
-        clientData.nextPayment = paymentsSchedule[0].date;
+        // clientData.nextPayment = paymentsSchedule[0].date;
 
         // initial total amount paid is 0
         clientData.totalAmountPaid = 0;
@@ -228,7 +229,9 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         $scope.loanSummaries.loanAmountInterest.value = toCurrency(loan_amt * (1 + client.interestRate.rate));
         $scope.loanSummaries.terms.value = client.terms.name;
         $scope.loanSummaries.releaseDate.value = client.releaseDate;
-        $scope.loanSummaries.maturityDate.value = client.paymentsSchedule[client.paymentsSchedule.length - 1].date;
+        $scope.loanSummaries.maturityDate.value = dateFilter(new Date(new Date(client.releaseDate).getTime() + (client.terms.days * 24 * 3600 * 1000)), DATE_FORMAT);
+        // console.log('....', dateFilter(new Date(new Date(client.releaseDate).getTime() + (90 * 24 * 3600 * 1000)), DATE_FORMAT));
+        // $scope.loanSummaries.maturityDate.value = client.paymentsSchedule[client.paymentsSchedule.length - 1].date;
 
         $scope.loanSummaries.amortization.label = client.paymentFrequency.name;
         $scope.loanSummaries.amortization.value = toCurrency(loan_amt * (1 + client.interestRate.rate) / (client.paymentFrequency.name === 'Weekly' ? client.terms.weeks : client.terms.days));
@@ -239,7 +242,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         var DAY = 24 * 60 * 60 * 1000;
         $scope.loanSummaries.count.value = Math.ceil(diff_date / DAY);
 
-        var pay_date;
+        /*var pay_date;
         var run_bal = 0;
         for (var i=0; i<client.paymentsSchedule.length; i+=1) {
           pay_date = new Date(client.paymentsSchedule[i].date);
@@ -251,9 +254,9 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
           // format payment amount
           client.paymentsSchedule[i].paymentAmount = toCurrency(client.paymentsSchedule[i].paymentAmount);
-        }
+        }*/
         // console.log(run_bal);
-        $scope.loanSummaries.runningBalance.value = toCurrency(run_bal);
+        // $scope.loanSummaries.runningBalance.value = toCurrency(run_bal);
 
         $scope.loanSummaries.discrepancy.value = 0;
         $scope.loanSummaries.totalAmountPaid.value = toCurrency(client.totalAmountPaid);
@@ -264,19 +267,29 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
     };
 
     $scope.searchClient = function(item) {
-      // console.log('item', item);
-      // $scope.findOne(item._id);
       $location.path('clients/' + item._id);
     };
 
     $scope.find = function() {
       Clients.query(function(clients) {
-        for (var i=0, len=clients.length; i<len; i+=1) {
-          clients[i].loanAmount = toCurrency(clients[i].loanAmount);
+        /*for (var i=0, len=clients.length; i<len; i+=1) {
+          console.log(clients[i]);
+          clients[i].loanAmountInterest = toCurrency(clients[i].loanAmount * (1 + clients[i].interestRate.rate));
           clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
           clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
+          clients[i].maturityDate = dateFilter(new Date(new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000)), DATE_FORMAT);
+          // clients[i].maturityDate = dateFilter(new Date(new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000)), DATE_FORMAT);
+        }*/
+        for (var i=0, len=clients.length; i<len; i+=1) {
+          console.log(clients[i]);
+          clients[i].loanAmountInterest = toCurrency(clients[i].loanAmountInterest);
+          clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
+          clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
+          clients[i].maturityDate = dateFilter(clients[i].maturityDate, DATE_FORMAT);
+          // clients[i].maturityDate = dateFilter(new Date(new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000)), DATE_FORMAT);
         }
         $scope.clients = clients;
+        console.log(clients);
       });
     };
 
@@ -332,7 +345,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
         var bal_upto_maturity = 0;
         var amt_paid_from_start = 0;
         // var run_bal = 0;
-        var run_bal_total = 0;
+        // var run_bal_total = 0;
         var now = new Date();
         var pay_date;
         var next_pay_date;
@@ -354,7 +367,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
             next_pay_date = $scope.client.paymentsSchedule[i + 1].date;
           }
         }
-        $scope.client.nextPayment = next_pay_date;
+        // $scope.client.nextPayment = next_pay_date;
         $scope.client.loanAmount = toNumber($scope.client.loanAmount);
         $scope.client.outstandingBalance = toNumber(bal_upto_maturity);
         $scope.client.totalAmountPaid = toNumber(amt_paid_from_start);
@@ -374,16 +387,16 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
        /* */
 
         // update loan summary
-        for ( i = 0; i<len; i+=1) {
+        /*for ( i = 0; i<len; i+=1) {
           pay_date = new Date($scope.client.paymentsSchedule[i].date);
           next_pay_date = new Date($scope.client.nextPayment);
           if (pay_date.getTime() <= next_pay_date.getTime()) {
             run_bal_total += toNumber($scope.client.paymentsSchedule[i].paymentAmount);
           }
-        }
+        }*/
         $scope.loanSummaries.totalAmountPaid.value = toCurrency(amt_paid_from_start);
         $scope.loanSummaries.outstandingBalance.value = toCurrency(bal_upto_maturity);
-        $scope.loanSummaries.runningBalance.value = toCurrency(run_bal_total - amt_paid_from_start);
+        // $scope.loanSummaries.runningBalance.value = toCurrency(run_bal_total - amt_paid_from_start);
 
 
 

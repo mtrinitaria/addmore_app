@@ -26,7 +26,7 @@ module.exports = function(Clients, app, auth, database) {
   app.route('/loanofficers')
     .get(clients.loanofficers);
 
-  app.route('/clients/:clientId/balance/:balance')
+  app.route('/client/:clientId/balance/:balance/paid/:paid')
     .post(auth.requiresLogin, clients.clientsbalance);
 
   // app.get('/officerclients', function(req, res, next) {

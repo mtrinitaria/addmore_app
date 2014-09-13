@@ -10,9 +10,9 @@ angular.module('mean.clients').factory('Clients', ['$resource',
       }
     });
   }
-]).factory('Clients', ['$resource',
+]);/*.factory('Clients', ['$resource',
   function($resource) {
-    return $resource('clients/:clientId/balance/:balance', {
+    return $resource('client/:clientId/balance/:balance', {
       clientId: '@_id',
       balance: '@balance',
     }, {
@@ -21,7 +21,7 @@ angular.module('mean.clients').factory('Clients', ['$resource',
       }
     });
   }
-]);
+]);*/
 
 angular.module('mean.users').factory('MeanUser', ['$resource',
   function($resource) {

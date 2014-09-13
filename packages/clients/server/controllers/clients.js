@@ -99,14 +99,29 @@ exports.show = function(req, res) {
  * List of Clients
  */
 exports.all = function(req, res, a) {
-  Client.find().sort('-created').limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid paymentsSchedule').populate('user', 'name username').exec(function(err, clients) {
+  Client.find().sort('-created').limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid interestRate terms releaseDate').populate('user', 'name username').exec(function(err, clients) {
     
     if (err) {
       return res.json(500, {
         error: 'Cannot list the clients'
       });
     }
-    var datas = [];
+    var data = [];
+    for (var i=0,len=clients.length;i<len;i+=1) {
+      // _id: "54149e5bc832c0abef26b6f2"clientName: "m"interestRate: ObjectloanAmount: 100000loanAmountInterest: "103,500.00"maturityDate: "2014/12/13"outstandingBalance: "99,900.00"releaseDate: "2014-09-13T16:00:00.000Z"terms: ObjecttotalAmountPaid: "3,600.00"
+      // clients[i].maturityDate = new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000);
+      data[i] = {
+        _id:clients[i]._id,
+        clientName:clients[i].clientName,
+        loanAmountInterest:clients[i].loanAmount * (1 + clients[i].interestRate.rate),
+        maturityDate:new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000),
+        outstandingBalance:clients[i].outstandingBalance,
+        totalAmountPaid:clients[i].totalAmountPaid
+      };
+    }
+    res.json(data);
+    // res.json(clients);
+    /*var datas = [];
     for (var i=0,len=clients.length;i<len;i+=1) {
       var dta = {};
       var client = clients[i];
@@ -120,7 +135,7 @@ exports.all = function(req, res, a) {
     }
     // res.json(clients);
     res.json(datas);
-    // console.log(clients);
+    */
   });
 };
 
@@ -129,13 +144,16 @@ exports.officerclients = function(req, res, next) {
   console.log('ahehe');
   console.log('ahehe');
   console.log('ahehe');
-  Client.find().where('loanOfficer.name', 'test2').sort('-created').limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid paymentsSchedule').populate('user', 'name username').exec(function(err, clients) {
+  Client.find().where('loanOfficer.name', 'test2').sort('-created').limit(500).select('clientName loanAmount outstandingBalance totalAmountPaid').populate('user', 'name username').exec(function(err, clients) {
     
     if (err) {
       return res.json(500, {
         error: 'Cannot list the clients'
       });
     }
+    res.json(clients);
+    next();
+    /*
     var datas = [];
     for (var i=0,len=clients.length;i<len;i+=1) {
       var dta = {};
@@ -150,8 +168,8 @@ exports.officerclients = function(req, res, next) {
     }
     // res.json(clients);
     res.json(datas);
-    // console.log(clients);
-    next();
+    
+    next();*/
   });
 };
 
@@ -170,7 +188,7 @@ exports.loanofficers = function(req, res) {
 };
 
 exports.clientsbalance = function(req, res) {
-  console.log(req.params);
+  console.log('>>>>>>>>', req.params);
 /*
   // console.log(req);
   var realBody = {};
@@ -201,6 +219,7 @@ exports.clientsbalance = function(req, res) {
   }, function(err, client) {
     console.log(client);
     client.outstandingBalance = req.params.balance;
+    client.totalAmountPaid = req.params.paid;
     client.save(function(err) {
       // req.logIn(user, function(err) {
         // if (err) return next(err);

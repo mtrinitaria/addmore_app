@@ -36,16 +36,16 @@
     <thead>
       <tr>
         <th class="text-center col-sm-2">Client Name</th>
-        <th class="col-sm-2">Loan Officer</th>
+        <th class="text-center col-sm-2">Loan Officer</th>
         <th class="col-sm-1" ng-repeat="day in weeks track by $index">{{day.date}}</th>
-        <!-- <th>Outstanding Balance</th>
+        <th>Outstanding Balance</th>
         <th>Payments Total</th>
-        <th>Outstanding - Payments</th> -->
+        <!-- <th>Outstanding - Payments</th> -->
       </tr>
     </thead>
     <tbody>
       <tr class="text-left " ng-repeat="client in clients | filter:searchSelected track by $index">
-        <td class="text-center col-sm-2"><a data-ng-href="#!/clients/{{client._id}}">{{client.clientName}}</a></td>
+        <td class="text-center col-sm-2"><a data-ng-href="#!/clients/{{client.client._id}}">{{client.client.clientName}}</a></td>
         <!-- <td class="text-left col-sm-2">
           <select class="form-control" 
             ng-model="clients[client._id]" 
@@ -53,14 +53,15 @@
             required>
           </select>
         </td> -->
-        <td class="text-left">
-          <select name="client.loanOfficer" class="form-control" 
+        <td class="text-center">
+          <a data-ng-href="#!/users/{{client.client.loanOfficer._id}}">{{client.client.loanOfficer.name}}</a>
+          <!-- <select name="client.loanOfficer" class="form-control" 
             ng-model="client.loanOfficer" 
             ng-options="item as item.name for item in loanOfficers" 
             ng-class="{'has-error' : submitted }"
             required>
             <option value="">Loan Officer</option>
-          </select>
+          </select> -->
           <!-- <a data-ng-href="#!/clients/{{client._id}}/payments" ng-hide="true" tooltip="View payments history of {{client.clientName}}" tooltip-placement="top">History</a>
           
           <form ngForm name="clientForm" class="form-inline" role="form" data-ng-submit="create(clientForm.$valid, client, client.paymentData.loanOfficer)" novalidate>
@@ -101,11 +102,12 @@
           </table>
         </td> -->
         <td ng-repeat="day in weeks track by $index">
-          <input type="text" ng-disabled="!(client.loanOfficer)" ng-model="client[day.date]" ng-blur="blurPayment(client, client.loanOfficer, day, client[day.date])">
+          <input type="text" ng-model="client.payments[day.datetime]" ng-blur="blurPayment(client, day, client.payments[day.datetime])">
+          <!-- <input type="text" ng-disabled="!(client.loanOfficer)" ng-model="client.payments[day.datetime]" ng-blur="blurPayment(client.client, client.loanOfficer, day, client.payments[day.datetime])"> -->
         </td>
-        <!-- <td>{{client.summary.balance}}</td>
-        <td>{{client.summary.payments}}</td>
-        <td>{{client.summary.nextBalance}}</td> -->
+        <td>{{client.client.summary.outstandingBalance}}</td>
+        <td>{{client.client.summary.totalAmountPaid}}</td>
+        <!-- <td>{{client.client.summary.outstandingBalance_totalAmountPaid}}</td> -->
 
       </tr>
     </tbody>

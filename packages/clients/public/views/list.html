@@ -17,7 +17,7 @@
     <thead>
       <tr>
         <th>Client Name</th>
-        <th>Loan Amount</th>
+        <th>Loan + Interest</th>
         <th>Outstanding Balance</th>
         <th>Total Amount Paid</th>
         <th>Maturity Date</th>
@@ -26,7 +26,7 @@
     <tbody>
       <tr ng-repeat="data in clients | filter:searchSelected track by $index">
         <td><a data-ng-href="#!/clients/{{data._id}}">{{data.clientName}}</a></td>
-        <td>{{data.loanAmount}}</td>
+        <td>{{data.loanAmountInterest}}</td>
         <td>{{data.outstandingBalance}}</td>
         <td>{{data.totalAmountPaid}}</td>
         <td>{{data.maturityDate}}</td>

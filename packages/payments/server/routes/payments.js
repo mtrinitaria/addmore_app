@@ -13,6 +13,9 @@ module.exports = function(Payments, app, auth, database) {
   app.route('/clientswbal')
     .get(payments.clientswbal);
 
+  app.route('/paymentsdashboard/:date')
+    .get(payments.paymentsdashboard);
+
 
   /*app.get('/payments/example/anyone', function(req, res, next) {
     res.send('Anyone can access this');

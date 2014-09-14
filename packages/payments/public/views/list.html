@@ -10,26 +10,67 @@
   </form>
 
   <hr />
-  <!-- <table>
-    <thead>
-      <tr>
-      <th>
-        <button type="button" class="btn btn-default btn-sm pull-left" ng-click="moveWeek(-1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-left"></i></button>
-      </th>
-      <th>
-        <button id="datepicker-00E-4329-title" role="heading" aria-live="assertive" aria-atomic="true" type="button" class="btn btn-default btn-sm" ng-click="toggleMode()" tabindex="-1" style="width:100%;"><strong class="ng-binding">August 2014</strong></button>
-        <pre>{{dateRange}}</pre>
-      </th>
-      <th>
-        <button type="button" class="btn btn-default btn-sm pull-right" ng-click="moveWeek(1)" tabindex="-1"><i class="glyphicon glyphicon-chevron-right"></i></button>
-      </th>
-    </tr>
-    </thead>
-  </table> -->
   <div>
-    <button type="button" class="btn btn-sm btn-info" ng-click="moveWeek(-1)"><i class="glyphicon glyphicon-chevron-left"></i></button>
-    <button type="button" class="btn btn-sm btn-default" ng-disabled="true">{{dateRange}}</button>
-    <button type="button" class="btn btn-sm btn-info" ng-click="moveWeek(1)"><i class="glyphicon glyphicon-chevron-right"></i></button>
+    <div class="col-sm-3">
+      <button type="button" class="btn btn-sm btn-info" ng-click="moveWeek(-1)"><i class="glyphicon glyphicon-chevron-left"></i></button>
+      <button type="button" class="btn btn-sm btn-default" ng-disabled="true">{{dateRange}}</button>
+      <button type="button" class="btn btn-sm btn-info" ng-click="moveWeek(1)"><i class="glyphicon glyphicon-chevron-right"></i></button>
+    </div>
+    <tabset class="panel col-sm-9">
+      <tab heading="Payments Dashboard" >
+        <!-- <div class="col-sm-4"> -->
+          <div class="panel panel-info">
+            <!-- <div class="panel-heading">Payments Dashboard</div> -->
+            <table class="table text-right">
+              <tr ng-repeat="payDash in paymentsDashboard">
+                <td>
+                  <span class="pull-left"><strong>{{payDash.label}}</strong></span>
+                </td>
+                <td>
+                  <span>{{payDash.name}}</span>
+                </td>
+                <td>
+                  <span class="pull-left">{{payDash.value}}</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        <!-- </div> -->
+      </tab>
+
+      <tab heading="Officers Dashboard" >
+        <!-- <div class="col-sm-5"> -->
+          <div class="panel panel-success">
+            <!-- <div class="panel-heading">Officers Dashboard</div> -->
+            <table class="table text-center">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>{{NOW.monthDate}}</th>
+                  <th>Week #{{NOW.week}}</th>
+                  <th>{{NOW.month}}</th>
+                  <th>{{NOW.year}}</th>
+                </tr>
+              </thead>
+              <tr ng-repeat="offDash in officersDashboard">
+                <td>
+                  <span ><strong>{{offDash.label}}</strong></span>
+                </td>
+                <td>
+                  <span></span>
+                </td>
+                <td>
+                  <span class="pull-left"></span>
+                </td>
+                <td></td>
+                <td>{{officersDashboard[offDash.id].year}}</td>
+              </tr>
+            </table>
+          </div>
+        <!-- </div> -->
+      </tab>
+
+    </tabset>
   </div>
 
   <table class="table table-striped text-center payments">
@@ -37,7 +78,7 @@
       <tr>
         <th class="text-center col-sm-2">Client Name</th>
         <th class="text-center col-sm-2">Loan Officer</th>
-        <th class="col-sm-1" ng-repeat="day in weeks track by $index">{{day.date}}</th>
+        <th class="col-sm-1" ng-repeat="day in weeks track by $index">{{day.label}}</th>
         <th>Outstanding Balance</th>
         <th>Payments Total</th>
         <!-- <th>Outstanding - Payments</th> -->

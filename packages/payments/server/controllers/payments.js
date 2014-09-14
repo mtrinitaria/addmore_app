@@ -6,6 +6,7 @@
 var mongoose = require('mongoose'),
   Payment = mongoose.model('Payment'),
   Client = mongoose.model('Client'),
+  User = mongoose.model('User'),
   _ = require('lodash');
 
 
@@ -31,7 +32,7 @@ exports.create = function(req, res) {
   // console.log('create', req.body);
 
 
-  Payment.find().where('datetime', req.body.datetime).sort('-created').exec(function(err, payments) {
+  Payment.find({datetime: req.body.datetime, clientId:req.body.clientId}).sort('-created').exec(function(err, payments) {
     /*data.push({client:client, payments:payments});
     
     ctr -= 1;
@@ -155,11 +156,7 @@ exports.clientswbal = function(req, res) {
     function getPayments(client, i) {
       
       Payment.find().where('clientId', client._id).sort('-created').exec(function(err, payments) {
-        // var loanAmountInterest = client.loanAmount * (1 + client.interestRate.rate);
-        // console.log(loanAmountInterest);
-
-        // _id: "54149e5bc832c0abef26b6f2"clientName: "m"interestRate: ObjectloanAmount: 100000loanOfficer: Object outstandingBalance: 72640payments: Array[4]summary: ObjecttotalAmountPaid: 1532
-
+        
         data.push({client:{
           _id:client._id,
           clientName:client.clientName,
@@ -180,6 +177,90 @@ exports.clientswbal = function(req, res) {
       getPayments(clients[i], i);
     }
 
+  });
+};
+
+
+function getWeekNumber(newDate) {
+  var d = new Date(newDate);
+  d.setHours(0,0,0);
+  d.setDate(d.getDate()+4-(d.getDay()||7));
+  return Math.ceil((((d-new Date(d.getFullYear(),0,1))/8.64e7)+1)/7);
+}
+exports.paymentsdashboard = function(req, res) {
+  var d = new Date(req.params.date);
+  var totalPerYear = 0;
+  var totalPerMonth = 0;
+  var totalPerWeek = 0;
+  Payment.find().where('year', d.getFullYear()).sort('-created').exec(function(err, payments) {
+
+    for (var i = payments.length - 1; i >= 0; i-=1) {
+      totalPerYear += payments[i].payAmount;
+    }
+
+    // res.json({year: totalPerYear});
+    Payment.find({year:d.getFullYear(), month:d.getMonth()}).exec(function(err, payments) {
+      for (var i = payments.length - 1; i >= 0; i-=1) {
+        totalPerMonth += payments[i].payAmount;
+      }
+
+      // res.json({totalPerYear: totalPerYear, totalPerMonth: totalPerMonth});
+      Payment.find({year:d.getFullYear(), week:getWeekNumber(d)}).exec(function(err, payments) {
+        for (var i = payments.length - 1; i >= 0; i-=1) {
+          totalPerWeek += payments[i].payAmount;
+        }
+
+        User.find({role:'loanOfficer'}).sort('-created').select('name').exec(function(err, users) {
+
+          var ctr = users.length;
+          
+          var data = [];
+
+          // console.log(this.stream());
+          function getUsersPayments(user, i) {
+            var usersTotalPerYear = 0;
+            Payment.find({year:d.getFullYear(), userId:user._id}).exec(function(err, payments) {
+              
+              for (var i = payments.length - 1; i >= 0; i-=1) {
+                usersTotalPerYear += payments[i].payAmount;
+              }
+              data.push({
+                userId:user._id,
+                usersTotalPerYear:usersTotalPerYear
+              });
+              
+              ctr -= 1;
+              if (ctr === 0) {
+                res.json({year: totalPerYear, month: totalPerMonth, week:totalPerWeek, users:data});
+              } else {
+                getUsersPayments(users[ctr], ctr);
+              }
+              
+              // i+=1;
+              // getUsersPayments(users[i], i);
+            });
+          }
+          getUsersPayments(users[0], 0);
+
+          // for (var i = users.length - 1; i >= 0; i-=1) {
+            // console.log('########', users[i]);
+            // getUsersPayments(users[i], i);
+            /*Payment.find({year:d.getFullYear(), loanOfficer:users[i]._id}).exec(function(err, payments) {
+              for (var i = payments.length - 1; i >= 0; i-=1) {
+                usersTotalPerYear += payments[i].payAmount;
+                console.log('########', payments[i].payAmount);
+              }
+            });*/
+          // }
+
+        });
+
+
+        // res.json({year: totalPerYear, month: totalPerMonth, week:totalPerWeek});
+      });
+          
+    });
+    
   });
 };
 

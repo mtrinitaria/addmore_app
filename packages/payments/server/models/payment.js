@@ -18,11 +18,20 @@ var PaymentSchema = new Schema({
   clientId: {
     type: String
   },
-  loanOfficer: {
+  userId: {
     type: String
   },
   date: {
-    type: Date
+    type: String
+  },
+  week: {
+    type: String
+  },
+  month: {
+    type: String
+  },
+  year: {
+    type: String
   },
   datetime: {
     type: String

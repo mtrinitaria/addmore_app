@@ -61,7 +61,7 @@ exports.create = function(req, res) {
         //   });
         // }
         // res.json(payments);
-        console.log('payments',payments);
+        // console.log('payments',payments);
         var totalAmountPaid = 0;
         for (var i = payments.length - 1; i >= 0; i-=1) {
           totalAmountPaid += payments[i].payAmount;
@@ -76,7 +76,7 @@ exports.create = function(req, res) {
     
   });
 
-  console.log(req.body);
+  // console.log(req.body);
 
 
   /*payment.save(function(err) {
@@ -236,8 +236,6 @@ exports.paymentsdashboard = function(req, res) {
                 getUsersPayments(users[ctr], ctr);
               }
               
-              // i+=1;
-              // getUsersPayments(users[i], i);
             });
           }
           getUsersPayments(users[0], 0);

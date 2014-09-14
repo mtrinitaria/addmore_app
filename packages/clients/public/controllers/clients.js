@@ -89,7 +89,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
 
       $http.get('/loanofficers')
         .success(function(loanOfficers) {
-          console.log('loanOfficers', loanOfficers);
+          // console.log('loanOfficers', loanOfficers);
           // $scope.loanOfficers = loanOfficers;
           // $scope.newClientForm[]
           for (var i = $scope.newClientForm.length - 1; i >= 0; i-=1) {
@@ -281,7 +281,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
           // clients[i].maturityDate = dateFilter(new Date(new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000)), DATE_FORMAT);
         }*/
         for (var i=0, len=clients.length; i<len; i+=1) {
-          console.log(clients[i]);
+          // console.log(clients[i]);
           clients[i].loanAmountInterest = toCurrency(clients[i].loanAmountInterest);
           clients[i].totalAmountPaid = toCurrency(clients[i].totalAmountPaid);
           clients[i].outstandingBalance = toCurrency(clients[i].outstandingBalance);
@@ -289,7 +289,7 @@ angular.module('mean.clients').controller('ClientsController', ['$scope', '$stat
           // clients[i].maturityDate = dateFilter(new Date(new Date(clients[i].releaseDate).getTime() + (clients[i].terms.days * 24 * 3600 * 1000)), DATE_FORMAT);
         }
         $scope.clients = clients;
-        console.log(clients);
+        // console.log(clients);
       });
     };
 

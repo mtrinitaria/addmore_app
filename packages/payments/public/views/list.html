@@ -1,13 +1,14 @@
 <section data-ng-controller="PaymentsController" data-ng-init="find()">
   
-  <form class="form-inline" role="form">
+  <!-- <form class="form-inline" role="form">
     <div class="form-group">
       <div class="input-group col-sm-4">
         <div class="input-group-addon">Search <span class="glyphicon glyphicon-search search-icon"></span></div>
         <input class="form-control" type="text" placeholder="Search client name" ng-model="searchSelected" typeahead="item.clientName for item in clients | filter:$viewValue | limitTo:8">
       </div>
     </div>
-  </form>
+  </form> -->
+  <h4>Payments</h4>
 
   <hr />
   <div>
@@ -59,10 +60,8 @@
                 <td>
                   <span></span>
                 </td>
-                <td>
-                  <span class="pull-left"></span>
-                </td>
-                <td></td>
+                <td>{{officersDashboard[offDash.id].week}}</td>
+                <td>{{officersDashboard[offDash.id].month}}</td>
                 <td>{{officersDashboard[offDash.id].year}}</td>
               </tr>
             </table>
@@ -76,80 +75,37 @@
   <table class="table table-striped text-center payments">
     <thead>
       <tr>
-        <th class="text-center col-sm-2">Client Name</th>
-        <th class="text-center col-sm-2">Loan Officer</th>
-        <th class="col-sm-1" ng-repeat="day in weeks track by $index">{{day.label}}</th>
-        <th>Outstanding Balance</th>
-        <th>Payments Total</th>
+        <th class="text-left col-sm-2">
+          <span class="pull-left">Client Name<i class="glyphicon glyphicon-sort btn" ng-click="changeSorting('clientName')"></i></span>
+          <input class="pull-left" type="text" placeholder="client name" ng-model="searchClient" typeahead="item.client.clientName for item in clients | filter:$viewValue | limitTo:8">
+        </th>
+        <th class="text-left col-sm-2">
+          <span class="pull-left">Loan Officer<i class="glyphicon glyphicon-sort btn" ng-click="changeSorting('loanOfficer')"></i></span>
+          <input class="pull-left" type="text" placeholder="officer name" ng-model="searchOfficer" typeahead="item.name for item in loanOfficers | filter:$viewValue | limitTo:8">
+        </th>
+        <th class="col-sm-1" ng-repeat="day in weeks track by $index" >{{day.label}}</th>
+        <th class="danger">Outstanding Balance</th>
+        <th class="warning">Payments Total</th>
         <!-- <th>Outstanding - Payments</th> -->
       </tr>
     </thead>
     <tbody>
-      <tr class="text-left " ng-repeat="client in clients | filter:searchSelected track by $index">
-        <td class="text-center col-sm-2"><a data-ng-href="#!/clients/{{client.client._id}}">{{client.client.clientName}}</a></td>
-        <!-- <td class="text-left col-sm-2">
-          <select class="form-control" 
-            ng-model="clients[client._id]" 
-            ng-options="item as item.name for item in loanOfficers" 
-            required>
-          </select>
-        </td> -->
-        <td class="text-center">
+      <tr class="text-left " ng-repeat="client in clients | filter:(searchClient) | orderBy:sort.column:sort.descending track by $index">
+        <td class="text-left col-sm-2"><a data-ng-href="#!/clients/{{client.client._id}}">{{client.client.clientName}}</a></td>
+        <td class="text-left">
           <a data-ng-href="#!/users/{{client.client.loanOfficer._id}}">{{client.client.loanOfficer.name}}</a>
-          <!-- <select name="client.loanOfficer" class="form-control" 
-            ng-model="client.loanOfficer" 
-            ng-options="item as item.name for item in loanOfficers" 
-            ng-class="{'has-error' : submitted }"
-            required>
-            <option value="">Loan Officer</option>
-          </select> -->
-          <!-- <a data-ng-href="#!/clients/{{client._id}}/payments" ng-hide="true" tooltip="View payments history of {{client.clientName}}" tooltip-placement="top">History</a>
-          
-          <form ngForm name="clientForm" class="form-inline" role="form" data-ng-submit="create(clientForm.$valid, client, client.paymentData.loanOfficer)" novalidate>
-            <select name="client.paymentData.loanOfficer" class="form-control" 
-              ng-model="client.paymentData.loanOfficer" 
-              ng-options="item as item.name for item in loanOfficers" 
-              ng-class="{'has-error' : submitted }"
-              required>
-              <option value="">Loan Officer</option>
-            </select>
-            <div ng-repeat="form in client.payments" ng-class="{'has-error' : submitted }">
-              <input type="text" ng-model="form.paidAmount" ng-change="paid(client)" required>
-              <input type="text" ng-model="form.date" 
-                datepicker-popup="yyyy/MM/dd"
-                init-date="initDate"
-                is-open="clientForm.form.date[$index].open"
-                ng-click="clientForm.form.date[$index].open = true"
-                min-date="minDate"
-                max-date="maxDate"
-                datepicker-options="dateOptions"
-                date-disabled="disabled(date, mode)" 
-                ng-required="true"
-                close-text="Close"
-                placeholder="yyyy/MM/dd"
-                required>
-              <i class="glyphicon glyphicon-remove btn" tooltip="Remove" tooltip-placement="right" ng-click="removeField(client, $index)"></i>
-            </div>
-            <button type="submit" ng-disabled="client.payments.length == 0" class="btn btn-primary btn-sm" >Save</button>
-            <button type="button" class="btn btn-success btn-sm" tooltip="Add payments" tooltip-placement="right" ng-click="addField(client)"><i class="glyphicon glyphicon-plus"></i></button>
-          </form> -->
-
         </td>
-        <!-- <td>
-          <table class="table text-right">
-            <tr><td><span class="pull-left"><strong>Outstanding Balance:</strong></span>{{client.outstandingBalance}}</td></tr>
-            <tr><td><span class="pull-left"><strong>Payments:</strong></span>{{paymentsTotal(client)}}</td></tr>
-            <tr><td><span class="pull-left"><strong>Outstanding - Payment:</strong></span>{{nextOutstandingBalance(client)}}</td></tr>
-          </table>
-        </td> -->
         <td ng-repeat="day in weeks track by $index">
           <input type="text" ng-model="client.payments[day.datetime]" ng-blur="blurPayment(client, day, client.payments[day.datetime])">
           <!-- <input type="text" ng-disabled="!(client.loanOfficer)" ng-model="client.payments[day.datetime]" ng-blur="blurPayment(client.client, client.loanOfficer, day, client.payments[day.datetime])"> -->
         </td>
-        <td>{{client.client.summary.outstandingBalance}}</td>
-        <td>{{client.client.summary.totalAmountPaid}}</td>
-        <!-- <td>{{client.client.summary.outstandingBalance_totalAmountPaid}}</td> -->
+        <td class="danger">{{client.client.summary.outstandingBalance}}</td>
+        <td class="warning">{{client.client.summary.totalAmountPaid}}</td>
 
+      </tr>
+      <tr>
+        <td colspan="2">Total</td>
+        <td ng-repeat="day in weeks track by $index">{{getTotalOfDay(weeks[$index].datetime)}}</td>
       </tr>
     </tbody>
   </table>

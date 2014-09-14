@@ -212,33 +212,89 @@ exports.paymentsdashboard = function(req, res) {
 
         User.find({role:'loanOfficer'}).sort('-created').select('name').exec(function(err, users) {
 
-          var ctr = users.length;
-          
-          var data = [];
+          var ctr = users.length;          
+          var usersYear = [];
+          var usersMonth = [];
+          var usersWeek = [];
 
-          // console.log(this.stream());
-          function getUsersPayments(user, i) {
+
+
+
+          function getUsersPaymentsWeek(user, i) {
+            var usersTotalPerWeek = 0;
+            Payment.find({year:d.getFullYear(), week:getWeekNumber(d), userId:user._id}).exec(function(err, payments) {
+              
+              for (var i = payments.length - 1; i >= 0; i-=1) {
+                usersTotalPerWeek += payments[i].payAmount;
+              }
+              usersWeek.push({
+                userId:user._id,
+                usersTotalPerWeek:usersTotalPerWeek
+              });
+              
+              ctr -= 1;
+              if (ctr === 0) {
+                res.json({year: totalPerYear, month: totalPerMonth, week:totalPerWeek, usersYear:usersYear, usersMonth:usersMonth, usersWeek:usersWeek});
+                // ctr = users.length;
+                // getUsersPaymentsWeek(users[0], 0);
+              } else {
+                getUsersPaymentsWeek(users[ctr], ctr);
+              }
+              
+            });
+          }
+
+          function getUsersPaymentsMonth(user, i) {
+            var usersTotalPerMonth = 0;
+            Payment.find({year:d.getFullYear(), month:d.getMonth(), userId:user._id}).exec(function(err, payments) {
+              
+              for (var i = payments.length - 1; i >= 0; i-=1) {
+                usersTotalPerMonth += payments[i].payAmount;
+              }
+              usersMonth.push({
+                userId:user._id,
+                usersTotalPerMonth:usersTotalPerMonth
+              });
+              
+              ctr -= 1;
+              if (ctr === 0) {
+                // res.json({year: totalPerYear, month: totalPerMonth, week:totalPerWeek, usersYear:usersYear, usersMonth:usersMonth});
+                ctr = users.length;
+                getUsersPaymentsWeek(users[0], 0);
+              } else {
+                getUsersPaymentsMonth(users[ctr], ctr);
+              }
+              
+            });
+          }
+
+
+          function getUsersPaymentsYear(user, i) {
             var usersTotalPerYear = 0;
             Payment.find({year:d.getFullYear(), userId:user._id}).exec(function(err, payments) {
               
               for (var i = payments.length - 1; i >= 0; i-=1) {
                 usersTotalPerYear += payments[i].payAmount;
               }
-              data.push({
+              usersYear.push({
                 userId:user._id,
                 usersTotalPerYear:usersTotalPerYear
               });
               
               ctr -= 1;
               if (ctr === 0) {
-                res.json({year: totalPerYear, month: totalPerMonth, week:totalPerWeek, users:data});
+                // res.json({year: totalPerYear, month: totalPerMonth, week:totalPerWeek, usersYear:usersYear});
+                ctr = users.length;
+                getUsersPaymentsMonth(users[0], 0);
               } else {
-                getUsersPayments(users[ctr], ctr);
+                getUsersPaymentsYear(users[ctr], ctr);
               }
               
             });
           }
-          getUsersPayments(users[0], 0);
+
+
+          getUsersPaymentsYear(users[0], 0);
 
           // for (var i = users.length - 1; i >= 0; i-=1) {
             // console.log('########', users[i]);

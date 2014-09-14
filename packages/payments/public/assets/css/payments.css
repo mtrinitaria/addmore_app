@@ -1,8 +1,11 @@
 .payments-example h1 {
   background-color: purple
 }
-.payments.table input {
+.payments.table tr input {
 	width: 80px;
+}
+.payments.table th input {
+	width: 100px;
 }
 .payments.table select {
 	width: 120px;

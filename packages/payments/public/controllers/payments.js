@@ -19,12 +19,13 @@ function getWeekNumber(newDate) {
 }
 
 
-angular.module('mean.payments').controller('PaymentsController', ['$scope', '$http', 'dateFilter', 'Global', 'Payments',
-  function($scope, $http, dateFilter, Global, Payments) {
+angular.module('mean.payments').controller('PaymentsController', ['$scope', '$http', 'dateFilter', '$filter', 'Global', 'Payments',
+  function($scope, $http, dateFilter, $filter, Global, Payments) {
     $scope.global = Global;
     $scope.package = {
       name: 'payments'
     };
+    var orderBy = $filter('orderBy');
 
     $scope.clients = [];
     $scope.loanOfficers = [];
@@ -59,6 +60,8 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
       $http.get('/clientswbal').success(function(clients) {
         // console.log(clients);
         for (var i = clients.length - 1; i >= 0; i-=1) {
+          clients[i].clientName = clients[i].client.clientName;
+          clients[i].loanOfficer = clients[i].client.loanOfficer.name;
           var client = clients[i].client;
           client.payments = clients[i].payments;
           client.summary = {
@@ -97,16 +100,50 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
     };
 
 
+    $scope.totalPayPerDay = {};
+
     var onPaymentsDashboard = function(response) {
       // console.log('onPaymentsDashboard', response);
-      $scope.paymentsDashboard.week.value = response.week;
-      $scope.paymentsDashboard.year.value = response.year;
-      $scope.paymentsDashboard.month.value = response.month;
+      $scope.paymentsDashboard.week.value = toCurrency(response.week);
+      $scope.paymentsDashboard.year.value = toCurrency(response.year);
+      $scope.paymentsDashboard.month.value = toCurrency(response.month);
 
       // console.log('$scope.officersDashboard', $scope.officersDashboard);
-      for (var i = response.users.length - 1; i >= 0; i-=1) {
-        $scope.officersDashboard[response.users[i].userId].year = response.users[i].usersTotalPerYear;
+      for (var i = response.usersYear.length - 1; i >= 0; i-=1) {
+        $scope.officersDashboard[response.usersYear[i].userId].year = toCurrency(response.usersYear[i].usersTotalPerYear);
+        $scope.officersDashboard[response.usersMonth[i].userId].month = toCurrency(response.usersMonth[i].usersTotalPerMonth);
+        $scope.officersDashboard[response.usersWeek[i].userId].week = toCurrency(response.usersWeek[i].usersTotalPerWeek);
       }
+      // for (i = response.usersMonth.length - 1; i >= 0; i-=1) {
+      //   $scope.officersDashboard[response.users[i].userId].month = response.users[i].usersTotalPerMonth;
+      // }
+
+        // for ( i=0;i < $scope.clients.length; i+=1) {
+        //   var client = $scope.clients[i].client;
+        //   // console.log(client);
+        //   for (var j=0;j < client.payments.length; j+=1) {
+        //     // client.payments[client.payments[j].datetime] = client.payments[j].payAmount;
+        //     console.log(client.payments);
+        //     for (var k = $scope.weeks.length - 1; k >= 0; k-=1) {
+        //       console.log($scope.weeks[k].datetime);
+        //       $scope.totalPayPerDay[$scope.weeks[k].datetime] = client.payments[$scope.weeks[k].datetime];
+        //     }
+        //   }
+        // }
+    };
+
+    $scope.getTotalOfDay = function(d) {
+      // 1410624000000
+      // d = new Date(d);
+      // console.log(1410624000000, d.getTime());
+      var total = 0;
+      for (var i = $scope.clients.length - 1; i >= 0; i-=1) {
+        var client = $scope.clients[i].client;
+        if (client.payments[d]) {
+          total += client.payments[d];
+        }
+      }
+      return toCurrency(total);
     };
 
 
@@ -139,13 +176,26 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
       // update table's header
       for (var i=0; i < 7; i+=1) {
         var d = new Date(first_day_monday.getTime() + (i * 3600 * 24 * 1000));
-        $scope.weeks[i] = {year:d.getFullYear(), date:d.getDate() + 1, month:d.getMonth(), week:getWeekNumber(first_day_monday), label:dateFilter(d, 'MMM dd'), datetime: new Date(dateFilter(d, 'yyyy MM dd')).getTime()};
+        $scope.weeks[i] = {
+          year:d.getFullYear(), 
+          date:d.getDate() + 1, 
+          month:d.getMonth(), 
+          week:getWeekNumber(first_day_monday), 
+          label:dateFilter(d, 'MMM dd'), 
+          datetime: new Date(dateFilter(d, 'yyyy MM dd')).getTime()
+        };
       }
 
       // update payments dashboard
       $scope.paymentsDashboard.month.name = dateFilter(first_day_monday, 'MMMM');
       $scope.paymentsDashboard.week.name = getWeekNumber(first_day_monday);
       $scope.paymentsDashboard.year.name = first_day_monday.getFullYear();
+
+      $scope.NOW.month = dateFilter(first_day_monday, 'MMMM');
+      $scope.NOW.week = getWeekNumber(first_day_monday);
+      $scope.NOW.year = first_day_monday.getFullYear();
+
+
 
       $http.get('/paymentsdashboard/' + first_day_monday).success(onPaymentsDashboard);
     };
@@ -183,6 +233,25 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
         });
 
       }
+    };
+
+    $scope.sort = {
+        column: '',
+        descending: false
+    };    
+    $scope.changeSorting = function(column) {
+      var sort = $scope.sort;
+ 
+      if (sort.column == column) {
+          sort.descending = !sort.descending;
+      } else {
+          sort.column = column;
+          sort.descending = false;
+      }
+      // $scope.sort.column = column;
+      // $scope.sort.descending = !$scope.sort.descending;
+      // console.log($scope.clients);
+      // $scope.clients = orderBy($scope.clients, column, $scope.sort.descending);
     };
 
   }

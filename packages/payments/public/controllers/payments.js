@@ -19,13 +19,13 @@ function getWeekNumber(newDate) {
 }
 
 
-angular.module('mean.payments').controller('PaymentsController', ['$scope', '$http', 'dateFilter', '$filter', 'Global', 'Payments',
-  function($scope, $http, dateFilter, $filter, Global, Payments) {
+angular.module('mean.payments').controller('PaymentsController', ['$scope', '$http', 'dateFilter', 'Global', 'Payments',
+  function($scope, $http, dateFilter, Global, Payments) {
     $scope.global = Global;
     $scope.package = {
       name: 'payments'
     };
-    var orderBy = $filter('orderBy');
+    // var orderBy = $filter('orderBy');
 
     $scope.clients = [];
     $scope.loanOfficers = [];
@@ -242,7 +242,7 @@ angular.module('mean.payments').controller('PaymentsController', ['$scope', '$ht
     $scope.changeSorting = function(column) {
       var sort = $scope.sort;
  
-      if (sort.column == column) {
+      if (sort.column === column) {
           sort.descending = !sort.descending;
       } else {
           sort.column = column;
